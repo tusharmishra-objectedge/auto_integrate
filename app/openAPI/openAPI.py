@@ -7,7 +7,11 @@ from keys import openai_key
 from app.file_handler.json_handler import JSONHandler
 from app.api_formatter.base import APIFormatter
 
-openai.api_key = openai_key
+from dotenv import load_dotenv
+
+load_dotenv()
+
+openai.api_key = os.getenv("OPENAI_KEY")
 
 def match_api_fields(api1, api2):
     print(f'api1: {api1}')
