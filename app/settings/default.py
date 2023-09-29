@@ -1,3 +1,3 @@
 import os
 
-DEFAULT_CWD = "demo"
+DEFAULT_CWD = "../demo"
