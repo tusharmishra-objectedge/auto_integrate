@@ -18,21 +18,19 @@ def match_api_fields(api1, api2):
     print(f'api2: {api2}')
     print()
 
-    prompt = f"""
-    Match the fields from the following two APIs:
-    {api1} 
-    and 
-    {api2}
-    """
+    prompt = f'Match the fields from api1 to those in api2. The data is given in a JSON format, with the keys being the field and the values the type of the data. api1: {api1} and api2: {api2}.'
+
+    print(prompt)
 
     response = openai.Completion.create(
         engine="text-davinci-003",
         prompt=prompt,
-        max_tokens=150,
-        temperature=0.5,
+        max_tokens=1000,
+        # temperature=0.5,
     )
 
     generated_mapping = response.choices[0].text.strip()
+
 
     field_mapping = {}
 
@@ -65,7 +63,7 @@ def calculate_metrics(api1, api2, resultFile):
     for api1res, api2res in data.items():
         api1resClean = api1res.replace(" ","").lower()
         api2resClean = api2res.replace(" ", "").lower()
-        print(f'api1resClean: {api1resClean} api2resClean: {api2resClean}')
+        print(f'{api1resClean}: {api2resClean}')
         if api1resClean in api1_fields and api2resClean in api2_fields:
             api1_fields.remove(api1resClean)
             api2_fields.remove(api2resClean)
@@ -73,6 +71,7 @@ def calculate_metrics(api1, api2, resultFile):
 
     print()
     print(f'For {num_fields1} in api1, and {num_fields2} in api2, we got {matches} matches')
+    print (f'score: {matches/num_fields1}')
 
 
 if __name__ == "__main__":
@@ -85,6 +84,7 @@ if __name__ == "__main__":
     api1, api2 = api_formatter.format()
 
     print('Mapping api1 to api2')
+    print(api1)
 
     result = match_api_fields(api1, api2)
 
@@ -102,4 +102,14 @@ if __name__ == "__main__":
         calculate_metrics(api1, api2, 'openAI_output.txt')
     else:
         print('OpenAI returned no results, run again')
+
+    # calculate_metrics(api1, api2, 'openAI_output.txt')
+    # prompt = f"""
+    #    Match the fields from the following two APIs:
+    #    {api1}
+    #    and
+    #    {api2}
+    #    """
+    #
+    # print(len(prompt))
 
