@@ -1,0 +1,58 @@
+{
+    "api1": {
+        "type": "mock_api",
+        "url": "https://651313e18e505cebc2e98c43.mockapi.io/pupils",
+        "fields" : {
+            "createdAt": "string",
+            "name": "string",
+            "dateOfBirth": "string",
+            "address": "string",
+            "state": "string",
+            "city": "string",
+            "honors": "boolean",
+            "grade": "number",
+            "emergencyContact": "string",
+            "id": "string"
+        }
+    },
+    "api2": {
+        "type": "mock_api",
+        "url": "https://651313e18e505cebc2e98c43.mockapi.io/students",
+        "fields": {
+            "fullName": "string",
+            "emergencyContactNumber": "string",
+            "DoB": "string",
+            "city": "string",
+            "state": "string",
+            "street": "string",
+            "score": "number",
+            "honorStudent": "boolean",
+            "created": "string",
+            "id": "string"
+        }
+    },
+    "manual_map": {
+        "L2R": {
+            "fullName": "name",
+            "emergencyContactNumber": "emergencyContact",
+            "DoB": "dateOfBirth",
+            "city": "city",
+            "honorStudent": "honors",
+            "state": "state",
+            "street": "address",
+            "score": "grade",
+            "id": "id"
+        },
+        "R2L": {
+            "name": "fullName",
+            "emergencyContact": "emergencyContactNumber",
+            "dateOfBirth": "DoB",
+            "city": "city",
+            "honors": "honorStudent",
+            "state": "state",
+            "address": "street",
+            "grade": "score",
+            "id": "id"
+        }
+    }
+}

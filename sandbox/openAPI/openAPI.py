@@ -25,7 +25,7 @@ def match_api_fields(api1, api2):
     response = openai.Completion.create(
         engine="text-davinci-003",
         prompt=prompt,
-        max_tokens=1000,
+        max_tokens=3500,
         # temperature=0.5,
     )
 
@@ -84,7 +84,7 @@ if __name__ == "__main__":
     api1, api2 = api_formatter.format()
 
     print('Mapping api1 to api2')
-    print(api1)
+    # print(api1)
 
     result = match_api_fields(api1, api2)
 
