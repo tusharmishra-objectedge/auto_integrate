@@ -1,0 +1,18 @@
+ {
+"mappedFields": {
+"fullName": "name",
+"emergencyContactNumber": "emergencyContact",
+"DoB": "dateOfBirth",
+"city": "city",
+"state": "state",
+"street": "address",
+"score": "grade",
+"honorStudent": "honors",
+"created": "createdAt",
+"id": "id"
+},
+"unmappedFields": [
+"created",
+"honors"
+]
+}
