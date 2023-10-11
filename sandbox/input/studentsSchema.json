@@ -1,0 +1,42 @@
+{
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "createdAt": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "name": {
+        "type": "string"
+      },
+      "dateOfBirth": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "address": {
+        "type": "string"
+      },
+      "state": {
+        "type": "string"
+      },
+      "city": {
+        "type": "string"
+      },
+      "honors": {
+        "type": "boolean"
+      },
+      "grade": {
+        "type": "integer"
+      },
+      "emergencyContact": {
+        "type": "string",
+        "pattern": "^(\\+?[0-9]{1,4}[- ]?)?\\(?[0-9]{3}\\)?[- ]?[0-9]{3}[- ]?[0-9]{4}( x[0-9]+)?$"
+      },
+      "id": {
+        "type": "string"
+      }
+    },
+    "required": ["createdAt", "name", "dateOfBirth", "address", "state", "city", "honors", "grade", "emergencyContact", "id"]
+  }
+}

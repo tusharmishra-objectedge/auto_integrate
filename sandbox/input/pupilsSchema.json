@@ -1,0 +1,42 @@
+{
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "fullName": {
+        "type": "string"
+      },
+      "emergencyContactNumber": {
+        "type": "string",
+        "pattern": "^(\\+?[0-9]{1,4}[- ]?)?\\(?[0-9]{3}\\)?[- ]?[0-9]{3}[- ]?[0-9]{4}( x[0-9]+)?$"
+      },
+      "DoB": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "city": {
+        "type": "string"
+      },
+      "state": {
+        "type": "string"
+      },
+      "street": {
+        "type": "string"
+      },
+      "score": {
+        "type": "integer"
+      },
+      "honorStudent": {
+        "type": "boolean"
+      },
+      "created": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "id": {
+        "type": "string"
+      }
+    },
+    "required": ["fullName", "emergencyContactNumber", "DoB", "city", "state", "street", "score", "honorStudent", "created", "id"]
+  }
+}

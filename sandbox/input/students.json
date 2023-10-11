@@ -1,0 +1,62 @@
+ [
+  {
+  "createdAt": "2023-09-26T17:00:50.060Z",
+  "name": "Erica Cronin",
+  "dateOfBirth": "1968-03-25T06:37:49.959Z",
+  "address": "76152 Herman Coves",
+  "state": "Alabama",
+  "city": "Fort Reinholdcester",
+  "honors": false,
+  "grade": 72,
+  "emergencyContact": "(666) 511-9794 x941",
+  "id": "1"
+ },
+ {
+  "createdAt": "2023-09-26T12:46:00.587Z",
+  "name": "Ricardo Rau",
+  "dateOfBirth": "1972-06-18T15:50:32.071Z",
+  "address": "44103 Josie Walk",
+  "state": "South Carolina",
+  "city": "Port Nova",
+  "honors": false,
+  "grade": 62,
+  "emergencyContact": "(679) 492-8020 x7995",
+  "id": "2"
+ },
+ {
+  "createdAt": "2023-10-10T14:04:18.793Z",
+  "name": "Mrs. Angela Spinka",
+  "dateOfBirth": "1965-12-30T05:00:26.833Z",
+  "address": "137 Einar Extension",
+  "state": "Rhode Island",
+  "city": "Javonteworth",
+  "honors": false,
+  "grade": 34,
+  "emergencyContact": "807.202.1275 x37771",
+  "id": "3"
+ },
+ {
+  "createdAt": "2023-10-10T18:28:34.396Z",
+  "name": "Jamie Klein",
+  "dateOfBirth": "1978-06-26T03:11:22.536Z",
+  "address": "7327 Uriel River",
+  "state": "Maryland",
+  "city": "Blue Springs",
+  "honors": false,
+  "grade": 44,
+  "emergencyContact": "1-200-306-7305 x8326",
+  "id": "4"
+ },
+ {
+  "createdAt": "2023-10-10T00:31:16.404Z",
+  "name": "Rosemarie Bergstrom",
+  "dateOfBirth": "1943-05-11T11:30:35.247Z",
+  "address": "64003 Rohan Shoal",
+  "state": "North Carolina",
+  "city": "Brucefort",
+  "honors": false,
+  "grade": 26,
+  "emergencyContact": "(882) 544-6445 x900",
+  "id": "5"
+ }
+ ]
