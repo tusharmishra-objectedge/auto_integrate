@@ -23,7 +23,7 @@ if __name__ == "__main__":
     # The meta/llama-2-70b-chat model can stream output as it's running.
     # The predict method returns an iterator, and you can iterate over that output.
     # print(output)
-    with open('llamaOutput.txt', 'w+') as f:
+    with open('llamaOutput.json', 'w+') as f:
         for item in output:
             f.write(item)
 
