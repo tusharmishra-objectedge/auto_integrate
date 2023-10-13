@@ -23,26 +23,26 @@ class APIFormatter:
         api_attr = []
 
         for obj in api1_details, api2_details:
-            if obj["type"] == "mock_api":
-                api_attr.append(self.get_mock_api(obj["url"]))
+            if obj['type'] == 'json_api':
+                api_attr.append(self.get_json_api(obj['url']))
 
         return api_attr
 
-    def get_mock_api(self, url):
+    def get_json_api(self, url):
         """
-        Get mock API
+        Get JSON API
 
-        This function gets the mock API data from the URL.
+        This function gets the JSON API data from the URL.
 
         Parameters:
-            url (str): The URL of the mock API
+            url (str): The URL of the JSON API
 
         Returns:
-            list: The list of dictionaries from the mock API
+            list: The list of dictionaries from the JSON API
         """
         response = requests.get(url)
         if response.status_code == 200:
-            print("GET mock API: OK")
+            print("GET JSON API: OK")
             data = response.json()
             api_data = {}
 
@@ -53,5 +53,5 @@ class APIFormatter:
             return api_data
 
         else:
-            print("MockAPI GET: ERROR ", response.status_code)
+            print("JSON API GET: ERROR ", response.status_code)
             return {}

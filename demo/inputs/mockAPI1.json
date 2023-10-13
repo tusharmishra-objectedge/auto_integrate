@@ -1,10 +1,10 @@
 {
     "api1": {
-        "type": "mock_api",
+        "type": "json_api",
         "url": "https://651313e18e505cebc2e98c43.mockapi.io/pupils"
     },
     "api2": {
-        "type": "mock_api",
+        "type": "json_api",
         "url": "https://651313e18e505cebc2e98c43.mockapi.io/students"
     },
     "manual_map": {
