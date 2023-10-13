@@ -1,0 +1,97 @@
+{
+    "api1": {
+        "fullName": "str",
+        "emergencyContactNumber": "str",
+        "DoB": "str",
+        "city": "str",
+        "state": "str",
+        "street": "str",
+        "score": "int",
+        "honorStudent": "bool",
+        "created": "str",
+        "id": "str"
+    },
+    "api2": {
+        "createdAt": "str",
+        "name": "str",
+        "dateOfBirth": "str",
+        "address": "str",
+        "state": "str",
+        "city": "str",
+        "honors": "bool",
+        "grade": "int",
+        "emergencyContact": "str",
+        "id": "str"
+    },
+    "mappings": [
+        {
+            "type": "manual",
+            "L2R": {
+                "fullName": "name",
+                "emergencyContactNumber": "emergencyContact",
+                "DoB": "dateOfBirth",
+                "city": "city",
+                "honorStudent": "honors",
+                "state": "state",
+                "street": "address",
+                "score": "grade",
+                "id": "id"
+            },
+            "R2L": {
+                "name": "fullName",
+                "emergencyContact": "emergencyContactNumber",
+                "dateOfBirth": "DoB",
+                "city": "city",
+                "honors": "honorStudent",
+                "state": "state",
+                "address": "street",
+                "grade": "score",
+                "id": "id"
+            }
+        },
+        {
+            "type": "fuzzy",
+            "L2R": {
+                "fullName": "name",
+                "emergencyContactNumber": "emergencyContact",
+                "city": "city",
+                "state": "state",
+                "street": "state",
+                "honorStudent": "honors",
+                "created": "createdAt",
+                "id": "id"
+            },
+            "R2L": {
+                "name": "fullName",
+                "emergencyContact": "emergencyContactNumber",
+                "city": "city",
+                "state": "street",
+                "honors": "honorStudent",
+                "createdAt": "created",
+                "id": "id"
+            }
+        },
+        {
+            "type": "jaccard",
+            "L2R": {
+                "fullName": "name",
+                "emergencyContactNumber": "emergencyContact",
+                "city": "city",
+                "state": "state",
+                "street": "state",
+                "honorStudent": "honors",
+                "created": "createdAt",
+                "id": "id"
+            },
+            "R2L": {
+                "name": "fullName",
+                "emergencyContact": "emergencyContactNumber",
+                "city": "city",
+                "state": "street",
+                "honors": "honorStudent",
+                "createdAt": "created",
+                "id": "id"
+            }
+        }
+    ]
+}
