@@ -18,7 +18,7 @@ def match_api_fields(api1, api2):
     print(f'api2: {api2}')
     print()
 
-    prompt = f'Match the fields from api1 to those in api2. The data is given in a JSON format, with the keys being the field and the values the type of the data. api1: {api1} and api2: {api2}.'
+    prompt = f'Match the fields from api1 to those in api2. The data is given in a JSON format, with the keys being the field and the values the type of the data. api1: {api1} and api2: {api2}. Return a JSON object, with the mapped fields under "mappedFields" and unmapped fields as a JSON array under "unmappedFields". The key in "mappedFields" must be a field from api1 and the value must be a field from api2.'
 
     print(prompt)
 
@@ -26,7 +26,7 @@ def match_api_fields(api1, api2):
         engine="text-davinci-003",
         prompt=prompt,
         max_tokens=3500,
-        # temperature=0.5,
+        temperature=0.6,
     )
 
     generated_mapping = response.choices[0].text.strip()
