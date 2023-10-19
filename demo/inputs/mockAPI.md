@@ -54,7 +54,7 @@ Resource 2: /pupils/:id
 
 **pupils**
 
-`{ 
+`{
     "fullName": string,
     "emergencyContactNumber": string,
     "DoB": string,
@@ -80,6 +80,3 @@ Resource 2: /pupils/:id
 | honors      | honorStudent |
 | grade       | score        |
 | createdAt   | created      |
-
-
-
