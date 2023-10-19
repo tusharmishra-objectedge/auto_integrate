@@ -62,7 +62,7 @@ from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 
 **To enable GPU with M1/M2 macs:**
 
-**Make sure the model path is correct for your system!**
+**Make sure the model path is correct for your system!** (Should be path to model downloaded above)
 
 n_gpu_layers = 1  # Metal set to 1 is enough.
 
