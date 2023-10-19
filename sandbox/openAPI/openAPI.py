@@ -27,7 +27,7 @@ def match_api_fields(api1, api2):
         engine="text-davinci-003",
         prompt=prompt,
         max_tokens=3500,
-        # temperature=0.5,
+        temperature=0.6,
     )
 
     generated_mapping = response.choices[0].text.strip()

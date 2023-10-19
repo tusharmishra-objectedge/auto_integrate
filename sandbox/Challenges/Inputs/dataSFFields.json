@@ -1,0 +1,20 @@
+{
+  "properties": {
+    "ttxid": "str",
+    "certificate_number": "str",
+    "ownership_name": "str",
+    "dba_name": "str",
+    "full_business_address": "str",
+    "city": "str",
+    "state": "str",
+    "business_zip": "str",
+    "dba_start_date": "str",
+    "dba_end_date": "str",
+    "location_start_date": "str",
+    "location_end_date": "str",
+    "parking_tax": "bool",
+    "transient_occupancy_tax": "bool",
+    "location": "dict",
+    "uniqueid": "str"
+  }
+}

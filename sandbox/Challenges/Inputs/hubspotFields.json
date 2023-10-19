@@ -1,0 +1,11 @@
+{
+  "properties": {
+    "name": "str",
+    "domain": "str",
+    "city": "str",
+    "industry": "str",
+    "phone": "str",
+    "state": "str",
+    "lifecyclestage": "str"
+  }
+}

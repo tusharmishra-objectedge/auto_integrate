@@ -37,6 +37,7 @@ def load_model(path):
     return llm
 
 
+
 def generate_text(
     prompt="Who is the CEO of Apple?",
     max_tokens=256,
