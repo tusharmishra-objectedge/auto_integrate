@@ -30,6 +30,79 @@ n_gpu_layers = 1  # Metal set to 1 is enough.
 n_batch = 512  # Should be between 1 and n_ctx, consider the amount of RAM of your Apple Silicon Chip.
 # Make sure the model path is correct for your system!
 
+def loadModel(modelPath):
+    """
+    Loads the Llama 2 model from the modelPath
+    Args:
+        modelPath: Path to model file
+
+    Returns: LlamaCpp object
+
+    """
+    llm = LlamaCpp(
+        model_path=modelPath,
+        n_gpu_layers=n_gpu_layers,
+        n_batch=n_batch,
+        f16_kv=True,  # MUST set to True, otherwise you will run into problem after a couple of calls
+        callback_manager=callback_manager,
+        verbose=True,  # Verbose is required to pass to the callback manager
+        # grammar_path=GRAMMARS_JSON_PATH,
+    )
+
+    return llm
+
+def promptModel(api1, api2):
+    """
+    Prompts the Llama 2 model with the api1 and api2 and returns the response. Api1 and api2 must be formatted using api_formatter.format()
+    Args:
+        api1: api1
+        api2: api2
+
+    Returns:JSON response from Llama 2 model. Mapped fields under "mappedFields" and unmapped fields as a JSON array under the key "unmappedFields"
+
+    """
+
+    system_message = f"""Assistant's response is always in a JSON format.
+        """
+
+    instruction_message = f"""Respond to the following in JSON with 'mappedFields' and 'unmappedFields' values "
+        """
+
+    user_message = f"""Map the fields from api1 to the fields in api2. api1: {api1} and api2: {api2}. Mapped fields should be under "mappedFields". Unmapped fields as a JSON array under the key "unmappedFields". The output must be in the JSON format."""
+
+    prompt = f"""<s>[INST]<<SYS>>
+           {system_message} <</SYS>>
+
+           {user_message}[/INST]"""
+
+    result = llm(prompt)
+
+    resultClean = result.replace("\n", "")
+
+    """
+    Use Regex to clean response and capture the JSON output even if result not in desired format
+    """
+    # pattern = r"^\{.*[^\{]+\}$"
+    pattern = r"\{(.*)\}"
+    matches = re.search(pattern, resultClean, re.MULTILINE)
+
+    print(resultClean)
+
+    jsonString = ""
+
+    if matches:
+        print('---------CapturedText---------')
+        # for match in matches:
+        #     jsonString += match
+        jsonString += matches.group(0)
+
+    try:
+        parsed_json = json.loads(jsonString)
+    except json.JSONDecodeError as e:
+        print(f"Error parsing JSON: {e}")
+
+    return parsed_json
+
 
 if __name__ == "__main__":
     input_file = os.path.join("../../demo", "inputs/mockAPI1.json")
