@@ -115,60 +115,6 @@ if __name__ == "__main__":
     api_formatter = APIFormatter(inputs)
     api1, api2 = api_formatter.format()
 
-
-    # llm = LlamaCpp(
-    #     model_path=LLAMA_13B_LOCAL_PATH,
-    #     n_gpu_layers=n_gpu_layers,
-    #     n_batch=n_batch,
-    #     f16_kv=True,  # MUST set to True, otherwise you will run into problem after a couple of calls
-    #     callback_manager=callback_manager,
-    #     verbose=True,  # Verbose is required to pass to the callback manager
-    #     # grammar_path=GRAMMARS_JSON_PATH,
-    # )
-    #
-    #
-    # system_message = f"""Assistant's response is always in a JSON format.
-    # """
-    #
-    # instruction_message = f"""Respond to the following in JSON with 'mappedFields' and 'unmappedFields' values "
-    # """
-    #
-    # user_message = f"""Map the fields from api1 to the fields in api2. api1: {api1} and api2: {api2}. Mapped fields should be under "mappedFields". Unmapped fields as a JSON array under the key "unmappedFields". The output must be in the JSON format."""
-    #
-    # prompt = f"""<s>[INST]<<SYS>>
-    #    {system_message} <</SYS>>
-    #
-    #    {user_message}[/INST]"""
-    #
-    # # prompt = PromptTemplate(template=prompt, input_variables=["question"])
-    #
-    # # REGEX to capture the JSON output even if result not in desired format
-    # result=llm(prompt)
-    #
-    # resultClean = result.replace("\n", "")
-    #
-    # # pattern = r"^\{.*[^\{]+\}$"
-    # pattern = r"\{(.*)\}"
-    # matches = re.search(pattern, resultClean, re.MULTILINE)
-    #
-    #
-    # print(resultClean)
-    #
-    # jsonString = ""
-    #
-    # if matches:
-    #     print('---------CapturedText---------')
-    #     # for match in matches:
-    #     #     jsonString += match
-    #     jsonString += matches.group(0)
-    #
-    # # Ensure captured_json is a valid JSON
-    # print(jsonString)
-    # try:
-    #     parsed_json = json.loads(jsonString)
-    # except json.JSONDecodeError as e:
-    #     print(f"Error parsing JSON: {e}")
-
     llm = loadModel(LLAMA_13B_LOCAL_PATH)
 
     parsed_json = promptModel(api1, api2)
