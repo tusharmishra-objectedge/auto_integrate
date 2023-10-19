@@ -1,4 +1,4 @@
-# Auto-integrate
+# auto-integrate
 
 ### Updates:
 
