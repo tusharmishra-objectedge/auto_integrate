@@ -9,6 +9,7 @@
 | Api calls for Llama2 70B model                  | 10/10 |
 |                                                 |       |
 
+
 ## Setting up the environment
 Run the following commands to set up the environment:
 ```
@@ -30,8 +31,6 @@ For example:
 ```
 python3 -m auto_integrate_cli -i inputs/mockAPI1.json -o outputs/o.txt
 ```
-
-
 
 ### API Pricing Chart
 
@@ -103,7 +102,3 @@ llm = LlamaCpp(
 ```
 
 Refer to this document for more details: https://python.langchain.com/docs/integrations/llms/llamacpp
-
-
-
-
