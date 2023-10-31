@@ -1,5 +1,6 @@
 import inquirer
 from inquirer.themes import GreenPassion
+from inquirer.themes import BlueComposure
 
 import os
 import sys
@@ -8,6 +9,10 @@ sys.path.insert(0, parent_dir)
 
 from auto_integrate_cli.file_handler.json_handler import JSONHandler
 from auto_integrate_cli.api_formatter.base import APIFormatter
+
+import pandas as pd
+import plotly.graph_objs as go
+
 
 def prepareQuestions(api1, api2, mapping):
     """
@@ -61,6 +66,28 @@ def promptUser(questions):
     answers = inquirer.prompt(questions, theme=GreenPassion())
     return answers
 
+def visualize(mappings):
+    # testData = {'fullName': ['name', 'extraName'], 'emergencyContactNumber': ['emergencyContact'],
+    #             'DoB': ['dateOfBirth'], 'city': ['city'], 'state': ['state'], 'street': ['address'],
+    #             'score': ['grade'], 'honorStudent': ['honors'], 'created': ['createdAt'],
+    #             'tt1': ['typeTest1'], 'tt2': ['typeTest2'], 'tt3': ['typeTest3']}
+
+    for key in mappings:
+        mappings[key] = ", ".join(mappings[key])
+
+    df = pd.DataFrame(mappings.items(), columns=['Original Field Name', 'Mapped Field Name'])
+
+    fig = go.Figure(data=[go.Table(
+        header=dict(values=list(df.columns),
+                    fill_color='paleturquoise',
+                    align='left'),
+        cells=dict(values=[df['Original Field Name'], df['Mapped Field Name']],
+                   fill_color='lavender',
+                   align='left'))
+    ])
+
+    fig.show()
+
 
 if __name__ == "__main__":
     input_file = os.path.join("../../demo", "inputs/mockAPI1.json")
@@ -78,8 +105,10 @@ if __name__ == "__main__":
 
     mapping = mappingFile.read()
 
-    questions = prepareQuestions(api1, api2, mapping)
-    ans = promptUser(questions)
-    print(ans)
+    # questions = prepareQuestions(api1, api2, mapping)
+    # ans = promptUser(questions)
+    # print(ans)
+
+    visualize(mapping)
 
 
