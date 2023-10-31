@@ -67,6 +67,14 @@ def promptUser(questions):
     return answers
 
 def visualize(mappings):
+    """
+    Visualize the mapping, uses Plotly to plot a table
+    Args:
+        mappings: Dict returned from promptUser
+
+    Returns: None
+
+    """
     # testData = {'fullName': ['name', 'extraName'], 'emergencyContactNumber': ['emergencyContact'],
     #             'DoB': ['dateOfBirth'], 'city': ['city'], 'state': ['state'], 'street': ['address'],
     #             'score': ['grade'], 'honorStudent': ['honors'], 'created': ['createdAt'],
@@ -105,10 +113,10 @@ if __name__ == "__main__":
 
     mapping = mappingFile.read()
 
-    # questions = prepareQuestions(api1, api2, mapping)
-    # ans = promptUser(questions)
-    # print(ans)
+    questions = prepareQuestions(api1, api2, mapping)
+    ans = promptUser(questions)
+    print(ans)
 
-    visualize(mapping)
+    visualize(ans)
 
 
