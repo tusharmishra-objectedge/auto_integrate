@@ -10,16 +10,25 @@ from auto_integrate_cli.file_handler.json_handler import JSONHandler
 from auto_integrate_cli.api_formatter.base import APIFormatter
 
 def prepareQuestions(api1, api2, mapping):
+    """
+    Prepare questions for inquirer to prompt user for mapping
+    Args:
+        api1: api1 from api_formatter
+        api2: api2 from api_formatter
+        mapping: JSON from mapping file
+
+    Returns: list of questions for inquirer
+
+    """
     mappedFields = mapping['mappedFields']
     unmappedFields = mapping['unmappedFields']
 
     api1Fields = [x for x in api1.keys()]
     api2Fields = [x for x in api2.keys()]
 
-    print(api2Fields)
-
     questions = []
 
+    # Questions for mapped fields
     for field in mappedFields:
         q = inquirer.Checkbox(name=field,
                           message=f"VERIFY mapping for {field} (Press <space> to select, <Enter> to submit)",
@@ -28,6 +37,7 @@ def prepareQuestions(api1, api2, mapping):
                           ),
         questions.append(q)
 
+    # Questions for unmapped fields
     for field in unmappedFields:
         q = inquirer.Checkbox(name=field,
                           message=f"CHOOSE mapping for UNMAPPED {field} (Press <space> to select, <Enter> to submit)",
@@ -40,6 +50,14 @@ def prepareQuestions(api1, api2, mapping):
     return questions
 
 def promptUser(questions):
+    """
+    Prompt user for verifying and choosing mapping for questions
+    Args:
+        questions: list of questions for inquirer
+
+    Returns: Dict of answers from user, with key as api1 field name and values ad api2 field names
+
+    """
     answers = inquirer.prompt(questions, theme=GreenPassion())
     return answers
 
