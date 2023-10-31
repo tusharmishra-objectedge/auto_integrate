@@ -35,7 +35,13 @@ def prepareQuestions(api1, api2, mapping):
                           ),
         questions.append(q)
 
+    # Convert from list of tuple(inquirer) to list of inquirer
+    questions = [x[0] for x in questions]
     return questions
+
+def promptUser(questions):
+    answers = inquirer.prompt(questions, theme=GreenPassion())
+    return answers
 
 
 if __name__ == "__main__":
@@ -55,10 +61,7 @@ if __name__ == "__main__":
     mapping = mappingFile.read()
 
     questions = prepareQuestions(api1, api2, mapping)
-    questions = [x[0] for x in questions]
-    print(questions)
-
-    answers = inquirer.prompt(questions)
-    print(answers)
+    ans = promptUser(questions)
+    print(ans)
 
 
