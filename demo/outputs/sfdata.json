@@ -1,0 +1,246 @@
+{
+    "api1": {
+        "ttxid": {
+            "type": "str",
+            "sample_value": "1163383-10-171"
+        },
+        "certificate_number": {
+            "type": "str",
+            "sample_value": "1077174"
+        },
+        "ownership_name": {
+            "type": "str",
+            "sample_value": "Noam Argov Media Llc"
+        },
+        "dba_name": {
+            "type": "str",
+            "sample_value": "Noam Argov Media Llc"
+        },
+        "full_business_address": {
+            "type": "str",
+            "sample_value": "200 Buchanan St Apt 421"
+        },
+        "city": {
+            "type": "str",
+            "sample_value": "San Francisco"
+        },
+        "state": {
+            "type": "str",
+            "sample_value": "CA"
+        },
+        "business_zip": {
+            "type": "str",
+            "sample_value": "94102"
+        },
+        "dba_start_date": {
+            "type": "str",
+            "sample_value": "2017-08-03T00:00:00.000"
+        },
+        "dba_end_date": {
+            "type": "str",
+            "sample_value": "2023-10-20T00:00:00.000"
+        },
+        "location_start_date": {
+            "type": "str",
+            "sample_value": "2017-08-03T00:00:00.000"
+        },
+        "location_end_date": {
+            "type": "str",
+            "sample_value": "2023-10-20T00:00:00.000"
+        },
+        "naic_code": {
+            "type": "str",
+            "sample_value": "7100-7199"
+        },
+        "naic_code_description": {
+            "type": "str",
+            "sample_value": "Arts, Entertainment, and Recreation"
+        },
+        "parking_tax": {
+            "type": "bool",
+            "sample_value": false
+        },
+        "transient_occupancy_tax": {
+            "type": "bool",
+            "sample_value": false
+        },
+        "supervisor_district": {
+            "type": "str",
+            "sample_value": "8"
+        },
+        "neighborhoods_analysis_boundaries": {
+            "type": "str",
+            "sample_value": "Hayes Valley"
+        },
+        "location": {
+            "type": "dict",
+            "sample_value": {
+                "type": "Point",
+                "coordinates": [
+                    -122.426994,
+                    37.77188
+                ]
+            }
+        },
+        "uniqueid": {
+            "type": "str",
+            "sample_value": "1163383-10-171-1077174-7100-7199-08-03-2017"
+        },
+        ":@computed_region_6qbp_sg9q": {
+            "type": "str",
+            "sample_value": "27"
+        },
+        ":@computed_region_qgnn_b9vv": {
+            "type": "str",
+            "sample_value": "4"
+        },
+        ":@computed_region_26cr_cadq": {
+            "type": "str",
+            "sample_value": "5"
+        },
+        ":@computed_region_ajp5_b2md": {
+            "type": "str",
+            "sample_value": "9"
+        },
+        ":@computed_region_jwn9_ihcz": {
+            "type": "str",
+            "sample_value": "27"
+        }
+    },
+    "api2": {
+        "createdAt": {
+            "type": "str",
+            "sample_value": "2023-10-19T02:52:09.946Z"
+        },
+        "name": {
+            "type": "str",
+            "sample_value": "Shawna Ratke"
+        },
+        "address": {
+            "type": "str",
+            "sample_value": "60715"
+        },
+        "city": {
+            "type": "str",
+            "sample_value": "East Estaland"
+        },
+        "state": {
+            "type": "str",
+            "sample_value": "Iowa"
+        },
+        "zip": {
+            "type": "str",
+            "sample_value": "91438-6505"
+        },
+        "id": {
+            "type": "str",
+            "sample_value": "1"
+        }
+    },
+    "mappings": [
+        {
+            "type": "openai_text_davinci_003",
+            "mapped": {
+                "\"ttxid\"": "\"id\",",
+                "\"certificate_number\"": "\"name\",",
+                "\"ownership_name\"": "\"address\",",
+                "\"dba_name\"": "\"city\",",
+                "\"full_business_address\"": "\"state\",",
+                "\"city\"": "\"zip\",",
+                "\"state\"": "\"createdAt\",",
+                "\"business_zip\"": "\"null\",",
+                "\"dba_start_date\"": "\"null\",",
+                "\"dba_end_date\"": "\"null\",",
+                "\"location_start_date\"": "\"null\",",
+                "\"location_end_date\"": "\"null\",",
+                "\"naic_code\"": "\"null\",",
+                "\"naic_code_description\"": "\"null\",",
+                "\"parking_tax\"": "\"null\",",
+                "\"transient_occupancy_tax\"": "\"null\",",
+                "\"supervisor_district\"": "\"null\",",
+                "\"neighborhoods_analysis_boundaries\"": "\"null\",",
+                "\"location\"": "\"null\",",
+                "\"uniqueid\"": "\"null\","
+            }
+        },
+        {
+            "type": "openai_gpt-3.5-turbo-16k",
+            "mapped": {
+                "\"ttxid\"": "\"id\",",
+                "\"certificate_number\"": "\"id\",",
+                "\"ownership_name\"": "\"name\",",
+                "\"dba_name\"": "\"name\",",
+                "\"full_business_address\"": "\"address\",",
+                "\"city\"": "\"city\",",
+                "\"state\"": "\"state\",",
+                "\"business_zip\"": "\"zip\",",
+                "\"dba_start_date\"": "\"createdAt\",",
+                "\"dba_end_date\"": "\"createdAt\",",
+                "\"location_start_date\"": "\"createdAt\",",
+                "\"location_end_date\"": "\"createdAt\",",
+                "\"naic_code\"": "\"id\",",
+                "\"naic_code_description\"": "\"name\",",
+                "\"parking_tax\"": "null,",
+                "\"transient_occupancy_tax\"": "null,",
+                "\"supervisor_district\"": "null,",
+                "\"neighborhoods_analysis_boundaries\"": "null,",
+                "\"location\"": "null,",
+                "\"uniqueid\"": "\"id\","
+            }
+        },
+        {
+            "type": "llama2",
+            "mapped": {
+                "mapped_fields": {
+                    "ttxid": "createdAt",
+                    "certificate_number": "name",
+                    "ownership_name": "address",
+                    "dba_name": "city",
+                    "full_business_address": "state",
+                    "business_zip": "zip",
+                    "dba_start_date": "id"
+                },
+                "unmappedFields": [
+                    "naic_code",
+                    "naic_code_description",
+                    "parking_tax",
+                    "transient_occupancy_tax",
+                    "supervisor_district",
+                    "neighborhoods_analysis_boundaries",
+                    "location",
+                    "uniqueid",
+                    ":@computed_region_6qbp_sg9q",
+                    ":@computed_region_qgnn_b9vv",
+                    ":@computed_region_26cr_cadq",
+                    ":@computed_region_ajp5_b2md",
+                    ":@computed_region_jwn9_ihcz"
+                ]
+            }
+        },
+        {
+            "type": "autogen",
+            "mapped": {
+                "mapped_fields": {
+                    "ttxid": "id",
+                    "ownership_name": "name",
+                    "full_business_address": "address",
+                    "city": "city",
+                    "state": "state",
+                    "business_zip": "zip"
+                },
+                "unmapped_fields": [
+                    "certificate_number",
+                    "dba_name",
+                    "dba_start_date",
+                    "dba_end_date",
+                    "location_start_date",
+                    "location_end_date",
+                    "parking_tax",
+                    "transient_occupancy_tax",
+                    "location",
+                    "uniqueid"
+                ]
+            }
+        }
+    ]
+}

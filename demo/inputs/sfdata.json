@@ -1,0 +1,11 @@
+{
+    "api1": {
+        "type": "json_api",
+        "url": "https://data.sfgov.org/resource/g8m3-pdis.json",
+        "doc_website": "https://dev.socrata.com/foundry/data.sfgov.org/g8m3-pdis"
+    },
+    "api2": {
+        "type": "json_api",
+        "url": "https://65315e834d4c2e3f333ce6de.mockapi.io/api/v1/businessinfo"
+    }
+}

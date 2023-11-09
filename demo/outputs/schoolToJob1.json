@@ -1,0 +1,126 @@
+{
+    "api1": {
+        "firstName": {
+            "type": "str",
+            "sample_value": "Dereck"
+        },
+        "lastName": {
+            "type": "str",
+            "sample_value": "Kling"
+        },
+        "parent_email": {
+            "type": "str",
+            "sample_value": "Lora29@gmail.com"
+        },
+        "alternate_email": {
+            "type": "str",
+            "sample_value": "Jaden.Wisoky79@yahoo.com"
+        },
+        "primary_school": {
+            "type": "str",
+            "sample_value": "Westwood School"
+        },
+        "middle_school": {
+            "type": "str",
+            "sample_value": "Westwood School"
+        },
+        "high_school": {
+            "type": "str",
+            "sample_value": "Mount Senior High"
+        },
+        "extracurricular_activity_sports": {
+            "type": "list",
+            "sample_value": [
+                "tennis",
+                "badminton"
+            ]
+        },
+        "extracurricular_activity_clubs": {
+            "type": "list",
+            "sample_value": [
+                "Art",
+                "Dance"
+            ]
+        },
+        "studentId": {
+            "type": "str",
+            "sample_value": "1"
+        }
+    },
+    "api2": [
+        {
+            "applicant_id": {
+                "type": "int",
+                "sample_value": 1,
+                "description": "Unique ID of the applicant",
+                "constraints": {
+                    "required": false,
+                    "unique": true,
+                    "ignore": true
+                }
+            },
+            "applicant_name": {
+                "type": "string",
+                "sample_value": "John Doe",
+                "description": "Name of the applicant",
+                "constraints": {
+                    "required": true,
+                    "unique": false,
+                    "ignore": false
+                }
+            },
+            "contact_email": {
+                "type": "string",
+                "sample_value": "admv@doe.in",
+                "description": "Email of the applicant",
+                "constraints": {
+                    "required": true,
+                    "unique": false,
+                    "ignore": false
+                }
+            },
+            "last_institution_attended": {
+                "type": "string",
+                "sample_value": "St. Mary's School",
+                "description": "Name of the latest institution attended by the applicant",
+                "constraints": {
+                    "required": true,
+                    "unique": false,
+                    "ignore": false
+                }
+            },
+            "list_of_skills": {
+                "type": "list",
+                "sample_value": [
+                    "C",
+                    "C++",
+                    "Java",
+                    "Python"
+                ],
+                "description": "List of skills of the applicant",
+                "constraints": {
+                    "required": true,
+                    "unique": false,
+                    "ignore": false
+                }
+            }
+        }
+    ],
+    "mappings": [
+        {
+            "type": "autogen",
+            "mapped": {
+                "mapped_fields": {
+                    "firstName + lastName": "applicant_name",
+                    "parent_email": "contact_email",
+                    "high_school": "last_institution_attended",
+                    "extracurricular_activity_sports + extracurricular_activity_clubs": "list_of_skills"
+                },
+                "unmapped_fields": [
+                    "alternate_email",
+                    "studentId"
+                ]
+            }
+        }
+    ]
+}

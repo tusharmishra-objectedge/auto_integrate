@@ -1,0 +1,131 @@
+{
+    "api1": {
+        "firstName": {
+            "type": "str",
+            "sample_value": "Dereck"
+        },
+        "lastName": {
+            "type": "str",
+            "sample_value": "Kling"
+        },
+        "parent_email": {
+            "type": "str",
+            "sample_value": "Lora29@gmail.com"
+        },
+        "alternate_email": {
+            "type": "str",
+            "sample_value": "Jaden.Wisoky79@yahoo.com"
+        },
+        "primary_school": {
+            "type": "str",
+            "sample_value": "Westwood School"
+        },
+        "middle_school": {
+            "type": "str",
+            "sample_value": "Westwood School"
+        },
+        "high_school": {
+            "type": "str",
+            "sample_value": "Mount Senior High"
+        },
+        "extracurricular_activity_sports": {
+            "type": "list",
+            "sample_value": [
+                "tennis",
+                "badminton"
+            ]
+        },
+        "extracurricular_activity_clubs": {
+            "type": "list",
+            "sample_value": [
+                "Art",
+                "Dance"
+            ]
+        },
+        "studentId": {
+            "type": "str",
+            "sample_value": "1"
+        }
+    },
+    "api2": {
+        "applicant_id": {
+            "type": "int",
+            "sample_value": 1
+        },
+        "applicant_name": {
+            "type": "str",
+            "sample_value": "John Doe"
+        },
+        "contact_email": {
+            "type": "str",
+            "sample_value": "admv@doe.in"
+        },
+        "last_institution_attended": {
+            "type": "str",
+            "sample_value": "St. Mary's School"
+        },
+        "list_of_skills": {
+            "type": "list",
+            "sample_value": [
+                "C",
+                "C++",
+                "Java",
+                "Python"
+            ]
+        }
+    },
+    "mappings": [
+        {
+            "type": "openai_text_davinci_003",
+            "mapped": {
+                "\"firstName\"": "\"applicant_name\",",
+                "\"lastName\"": "\"applicant_name\",",
+                "\"parent_email\"": "\"contact_email\",",
+                "\"alternate_email\"": "\"contact_email\",",
+                "\"primary_school\"": "\"last_institution_attended\",",
+                "\"middle_school\"": "\"last_institution_attended\",",
+                "\"high_school\"": "\"last_institution_attended\",",
+                "\"extracurricular_activity_sports\"": "\"list_of_skills\",",
+                "\"extracurricular_activity_clubs\"": "\"list_of_skills\",",
+                "\"studentId\"": "\"applicant_id\""
+            }
+        },
+        {
+            "type": "openai_gpt-3.5-turbo-16k",
+            "mapped": {
+                "\"firstName\"": "\"applicant_name\",",
+                "\"lastName\"": "\"Not_migrated\",",
+                "\"parent_email\"": "\"contact_email\",",
+                "\"alternate_email\"": "\"Not_migrated\",",
+                "\"primary_school\"": "\"Not_migrated\",",
+                "\"middle_school\"": "\"Not_migrated\",",
+                "\"high_school\"": "\"last_institution_attended\",",
+                "\"extracurricular_activity_sports\"": "\"Not_migrated\",",
+                "\"extracurricular_activity_clubs\"": "\"Not_migrated\",",
+                "\"studentId\"": "\"Not_migrated\""
+            }
+        },
+        {
+            "type": "llama2",
+            "mapped": {
+                "mapped_fields": {
+                    "firstName": "applicant_name",
+                    "lastName": "contact_email",
+                    "parent_email": "last_institution_attended",
+                    "alternate_email": null,
+                    "primary_school": null,
+                    "middle_school": null,
+                    "high_school": null,
+                    "extracurricular_activity_sports": null,
+                    "extracurricular_activity_clubs": null,
+                    "studentId": "applicant_id"
+                },
+                "unmappedFields": [
+                    "list_of_skills",
+                    "extracurricular_activity_sports",
+                    "extracurricular_activity_clubs"
+                ]
+            }
+        }
+    ]
+}
