@@ -20,13 +20,17 @@ class APIFormatter:
         api1_details = self.input_obj["api1"]
         api2_details = self.input_obj["api2"]
 
-        api_attr = []
+        apis = []
 
         for obj in api1_details, api2_details:
-            if obj['type'] == 'json_api':
-                api_attr.append(self.get_json_api(obj['url']))
+            if obj["type"] == "json_api":
+                apis.append(self.get_json_api(obj["url"]))
+            if obj["type"] == "json_dict":
+                apis.append(self.get_json(obj["data"]))
+            if obj["type"] == "api_doc":
+                apis.append(obj["data"])
 
-        return api_attr
+        return apis
 
     def get_json_api(self, url):
         """
@@ -49,9 +53,16 @@ class APIFormatter:
             if len(data) > 0:
                 for key, value in data[0].items():
                     data_type = type(value).__name__
-                    api_data[key] = data_type
+                    api_data[key] = {"type": data_type, "sample_value": value}
             return api_data
-
         else:
             print("JSON API GET: ERROR ", response.status_code)
             return {}
+
+    def get_json(self, data):
+        api_data = {}
+        if len(data) > 0:
+            for key, value in data[0].items():
+                data_type = type(value).__name__
+                api_data[key] = {"type": data_type, "sample_value": value}
+        return api_data

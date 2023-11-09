@@ -67,12 +67,18 @@ def main():
     file_handler = JSONHandler(input_file, output_file)
     inputs = file_handler.read()
 
+    if not inputs["api1"] or not inputs["api2"]:
+        print("API1 or API2 is empty. Exiting...")
+        return
+
     api_formatter = APIFormatter(inputs)
     api1, api2 = api_formatter.format()
 
-    output_obj = mappings(
-        api1, api2, inputs["manual_map"]["L2R"], inputs["manual_map"]["R2L"]
-    )
+    manual_L2R, manual_R2L = None, None
+    if "manual_map" in inputs:
+        manual_L2R = inputs["manual_map"]["L2R"]
+        manual_R2L = inputs["manual_map"]["R2L"]
+    output_obj = mappings(api1, api2, manual_L2R, manual_R2L)
     print(f"\nWriting output file at path: {output_file} ...\n")
     file_handler.write(output_obj)
 
