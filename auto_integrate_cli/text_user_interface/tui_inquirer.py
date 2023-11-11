@@ -1,4 +1,6 @@
 import inquirer
+import pandas as pd
+import plotly.graph_objs as go
 from inquirer.themes import GreenPassion
 from inquirer.themes import BlueComposure
 
@@ -10,8 +12,7 @@ sys.path.insert(0, parent_dir)
 from auto_integrate_cli.file_handler.json_handler import JSONHandler
 from auto_integrate_cli.api_formatter.base import APIFormatter
 
-import pandas as pd
-import plotly.graph_objs as go
+
 
 
 def prepareQuestions(api1, api2, mapping):
