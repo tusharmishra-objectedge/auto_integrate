@@ -1,4 +1,5 @@
 import requests
+from .autogen import extract
 
 
 class APIFormatter:
@@ -23,13 +24,27 @@ class APIFormatter:
         apis = []
 
         for obj in api1_details, api2_details:
+            json_obj = {}
             if obj["type"] == "json_api":
-                apis.append(self.get_json_api(obj["url"]))
+                json_obj = self.get_json_api(obj["url"])
             if obj["type"] == "json_dict":
-                apis.append(self.get_json(obj["data"]))
+                json_obj = self.get_json(obj["data"])
             if obj["type"] == "api_doc":
-                apis.append(obj["data"])
+                json_obj = obj["data"]
+            if "doc_website" in obj:
+                information = ""
+                if json_obj:
+                    information = f"""
+                    This is the starting API structure from the GET request:
+                    {json_obj}.
+                    """
 
+                information += f"""\nThis is the API documentation website:
+                {obj["doc_website"]}. \n Now you need to extract information
+                and structure the API.
+                """
+                json_obj = extract(information)
+            apis.append(json_obj)
         return apis
 
     def get_json_api(self, url):
