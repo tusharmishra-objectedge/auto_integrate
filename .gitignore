@@ -18,3 +18,7 @@ build/
 
 .env
 sandbox/openAPI/keys.py
+
+# autogen files
+OAI_CONFIG_LIST
+.cache/
