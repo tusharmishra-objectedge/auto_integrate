@@ -7,6 +7,19 @@ from .base import BaseMapper
 
 class AutogenMapper(BaseMapper):
     def __init__(self, api1, api2):
+        """
+        Initialize the AutogenMapper class.
+
+        This function initializes the AutogenMapper class with the APIs to
+        map and the config list to use. The config list is a list of
+        configurations to use for the Autogen Assistant. The config list
+        is generated from the environment variable OAI_CONFIG_LIST which must
+        be a JSON array of objects. Each object must have a 'model' key which
+        specifies the model to use, that is,  the list in filter_dict.model
+        below. Each object should also have a 'key' key which specifies the
+        API kwy to use for the model. The API key is generated from the
+        OpenAI API.
+        """
         super().__init__(api1, api2)
         self.config_list = autogen.config_list_from_json(
             env_or_file="OAI_CONFIG_LIST",
@@ -22,6 +35,50 @@ class AutogenMapper(BaseMapper):
         )
 
     def map(self):
+        """
+        Map API 1 to API 2 using Autogen Assistant.
+
+        This function uses the Autogen Assistant to map API 1 to API 2.
+        Multiple AI agents are set up to perform different tasks. The
+        agents are set up in a group chat and the user is set up as a
+        proxy agent. The user initiates the chat and the agents perform
+        the mapping. The user can terminate the chat when the mapping is
+        complete. The output is in JSON format.
+
+        The following agents are set up:
+        1. SchemaAnalyzer
+        2. NamingConventionAnalyzer
+        3. DataFormatCompatibilityAnalyzer
+        4. TaskManager
+        5. UserProxy
+
+        SchemaAnalyzer: It analyzes the schema or data models of both APIs.
+        It detects and understands the data types and structures in both
+        schemas. It identifies equivalent data types across different APIs.
+        It provides recommendations for field mappings based on data types,
+        constraints, and language skills.
+
+        NamingConventionAnalyzer: It analyzes the naming conventions and
+        semantics used in both APIs. It recommends field mappings based on
+        language skills using NLP.
+
+        DataFormatCompatibilityAnalyzer: It ensures that the data formats are
+        compatible between the APIs. It checks for field format discrepancies
+        such as date-time formats, number formats, etc. It checks for field
+        constraints and proposes transformations to harmonize data formats
+        across APIs. It validates the formatting of data after transformation.
+
+        TaskManager: It manages the mapping process. It assigns tasks to other
+        agents and monitors their progress. It ensures that agents are working
+        on the right tasks and that tasks are completed on time. It ensures
+        that the mapping process is efficient and effective.
+
+        UserProxy: It is the user. It initiates the chat and terminates the
+        chat when the mapping is complete. It is set up as a proxy agent.
+
+        Returns:
+            dict: The mapped fields from API 1 to API 2 in JSON format.
+        """
         llm_config = {"config_list": self.config_list}
         schema_analyzer = autogen.AssistantAgent(
             name="SchemaAnalyzer",
