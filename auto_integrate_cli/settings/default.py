@@ -10,3 +10,5 @@ MODELS_DIR = "../models"
 AVAILABLE_MODELS = {
     "LLAMA-2-13B-Chat": "llama-2-13b-chat.Q4_0.gguf",
 }
+AUTOGEN_RERUN_CONDITION = "***RERUN_AUTOGEN***"
+AUTOGEN_RERUN_LIMIT = 3

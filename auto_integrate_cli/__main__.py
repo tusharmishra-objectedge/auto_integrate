@@ -7,7 +7,7 @@ from auto_integrate_cli.file_handler.json_handler import JSONHandler
 from auto_integrate_cli.api_formatter.base import APIFormatter
 
 # Mappers
-from auto_integrate_cli.mapper.mappings import mappings
+from auto_integrate_cli.mapper.mappings import mappings, map_autogen
 
 
 def get_args():
@@ -74,11 +74,12 @@ def main():
     api_formatter = APIFormatter(inputs)
     api1, api2 = api_formatter.format()
 
-    manual_L2R, manual_R2L = None, None
-    if "manual_map" in inputs:
-        manual_L2R = inputs["manual_map"]["L2R"]
-        manual_R2L = inputs["manual_map"]["R2L"]
-    output_obj = mappings(api1, api2, manual_L2R, manual_R2L)
+    # manual_L2R, manual_R2L = None, None
+    # if "manual_map" in inputs:
+    #     manual_L2R = inputs["manual_map"]["L2R"]
+    #     manual_R2L = inputs["manual_map"]["R2L"]
+    # output_obj = mappings(api1, api2, manual_L2R, manual_R2L)
+    output_obj = map_autogen(api1, api2)
     print(f"\nWriting output file at path: {output_file} ...\n")
     file_handler.write(output_obj)
 
