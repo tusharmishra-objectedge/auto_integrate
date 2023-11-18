@@ -3,7 +3,7 @@ import json
 
 
 class JSONHandler(FileHandler):
-    def __init__(self, input_file, output_file):
+    def __init__(self, input_file, output_file=None):
         """
         Initialize the JSONHandler class
 

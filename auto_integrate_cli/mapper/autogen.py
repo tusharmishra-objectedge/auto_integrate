@@ -3,6 +3,7 @@ import json
 import re
 
 from .base import BaseMapper
+from auto_integrate_cli.settings.default import AUTOGEN_RERUN_CONDITION
 
 
 class AutogenMapper(BaseMapper):
@@ -28,8 +29,8 @@ class AutogenMapper(BaseMapper):
                     # "gpt-3.5-turbo",
                     # "gpt-3.5-turbo-16k",
                     "gpt-4",
-                    "gpt-4-32k",
-                    # "gpt-4-1106-preview"
+                    # "gpt-4-32k",
+                    "gpt-4-1106-preview"
                 },
             },
         )
@@ -190,6 +191,9 @@ class AutogenMapper(BaseMapper):
             message=f"""Map fields from api1 to api2. api1: {self.api1} and
             api2: {self.api2}""",
         )
+
+
+
         response = user_proxy.last_message()["content"]
         response = response.replace("\n", "")
 
@@ -208,5 +212,32 @@ class AutogenMapper(BaseMapper):
             jsonString = json.loads(jsonString)
         except json.JSONDecodeError as e:
             print(f"Error parsing JSON: {e}")
+
+            # Parse through TaskManager messages if JSON format fails
+            messages = user_proxy._oai_messages.values()
+            tm_messages = [message for messages_list in messages for message in messages_list if
+                           message.get('name') == 'TaskManager']
+
+            tm_messages.reverse()
+
+            for message in tm_messages:
+                msg_content = message['content']
+                msg_content = msg_content.replace("\n", "")
+                matches = re.search(pattern, msg_content, re.MULTILINE)
+
+                jsonStringInternal = ""
+
+                if matches:
+                    jsonStringInternal += matches.group(0)
+                try:
+                    msg_json = json.loads(jsonStringInternal)
+                    return msg_json
+                except json.JSONDecodeError as e:
+                    print(f"Error parsing JSON from TaskManager: {e}")
+                    print()
+                    continue
+
+            return(AUTOGEN_RERUN_CONDITION)
+
 
         return jsonString

@@ -4,6 +4,8 @@ from auto_integrate_cli.mapper.openai import OpenAIAPIMapper
 from auto_integrate_cli.mapper.llama2_13b_chat import LLama2Mapper
 from auto_integrate_cli.mapper.autogen import AutogenMapper
 
+from auto_integrate_cli.settings.default import AUTOGEN_RERUN_CONDITION, AUTOGEN_RERUN_LIMIT
+
 
 def map_fuzzy(api1, api2):
     """
@@ -55,12 +57,23 @@ def map_llama2(api1, api2):
 
 def map_autogen(api1, api2):
     """
-    Map API 1 to API 2 using Autogen
+    Map API 1 to API 2 using Autogen, runs up to AUTOGEN_RERUN_LIMIT times, which is defined in settings.
     """
     autogen_mapper = AutogenMapper(api1, api2)
+    runs = 0
+    result = None
+
+    while (runs < AUTOGEN_RERUN_LIMIT):
+        result = autogen_mapper.map()
+        if result != AUTOGEN_RERUN_CONDITION:
+            break
+
+        runs +=1
+
+
     return {
         "type": "autogen",
-        "mapped": autogen_mapper.map(),
+        "mapped": result,
     }
 
 
