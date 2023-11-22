@@ -1,126 +1,57 @@
 {
-    "api1": {
-        "firstName": {
-            "type": "str",
-            "sample_value": "Dereck"
+    "type": "autogen",
+    "mapped": {
+        "applicant_id": {
+            "transformation": "toInt",
+            "source_fields": [
+                "studentId"
+            ],
+            "conditions": []
         },
-        "lastName": {
-            "type": "str",
-            "sample_value": "Kling"
+        "applicant_name": {
+            "transformation": "toConcat",
+            "source_fields": [
+                "firstName",
+                "lastName"
+            ],
+            "conditions": []
         },
-        "parent_email": {
-            "type": "str",
-            "sample_value": "Lora29@gmail.com"
-        },
-        "alternate_email": {
-            "type": "str",
-            "sample_value": "Jaden.Wisoky79@yahoo.com"
-        },
-        "primary_school": {
-            "type": "str",
-            "sample_value": "Westwood School"
-        },
-        "middle_school": {
-            "type": "str",
-            "sample_value": "Westwood School"
-        },
-        "high_school": {
-            "type": "str",
-            "sample_value": "Mount Senior High"
-        },
-        "extracurricular_activity_sports": {
-            "type": "list",
-            "sample_value": [
-                "tennis",
-                "badminton"
-            ]
-        },
-        "extracurricular_activity_clubs": {
-            "type": "list",
-            "sample_value": [
-                "Art",
-                "Dance"
-            ]
-        },
-        "studentId": {
-            "type": "str",
-            "sample_value": "1"
-        }
-    },
-    "api2": [
-        {
-            "applicant_id": {
-                "type": "int",
-                "sample_value": 1,
-                "description": "Unique ID of the applicant",
-                "constraints": {
-                    "required": false,
-                    "unique": true,
-                    "ignore": true
-                }
-            },
-            "applicant_name": {
-                "type": "string",
-                "sample_value": "John Doe",
-                "description": "Name of the applicant",
-                "constraints": {
-                    "required": true,
-                    "unique": false,
-                    "ignore": false
-                }
-            },
-            "contact_email": {
-                "type": "string",
-                "sample_value": "admv@doe.in",
-                "description": "Email of the applicant",
-                "constraints": {
-                    "required": true,
-                    "unique": false,
-                    "ignore": false
-                }
-            },
-            "last_institution_attended": {
-                "type": "string",
-                "sample_value": "St. Mary's School",
-                "description": "Name of the latest institution attended by the applicant",
-                "constraints": {
-                    "required": true,
-                    "unique": false,
-                    "ignore": false
-                }
-            },
-            "list_of_skills": {
-                "type": "list",
-                "sample_value": [
-                    "C",
-                    "C++",
-                    "Java",
-                    "Python"
-                ],
-                "description": "List of skills of the applicant",
-                "constraints": {
-                    "required": true,
-                    "unique": false,
-                    "ignore": false
-                }
-            }
-        }
-    ],
-    "mappings": [
-        {
-            "type": "autogen",
-            "mapped": {
-                "mapped_fields": {
-                    "firstName + lastName": "applicant_name",
-                    "parent_email": "contact_email",
-                    "high_school": "last_institution_attended",
-                    "extracurricular_activity_sports + extracurricular_activity_clubs": "list_of_skills"
+        "contact_email": {
+            "transformation": "none",
+            "source_fields": [
+                "parent_email",
+                "alternate_email"
+            ],
+            "conditions": [
+                {
+                    "condition": "ifNull",
+                    "fallback": "alternate_email"
                 },
-                "unmapped_fields": [
-                    "alternate_email",
-                    "studentId"
-                ]
-            }
+                {
+                    "condition": "ifEmpty",
+                    "fallback": "alternate_email"
+                }
+            ]
+        },
+        "last_institution_attended": {
+            "transformation": "none",
+            "source_fields": [
+                "high_school"
+            ],
+            "conditions": []
+        },
+        "list_of_skills": {
+            "transformation": "none",
+            "source_fields": [
+                "extracurricular_activity_sports",
+                "extracurricular_activity_clubs"
+            ],
+            "conditions": [
+                {
+                    "condition": "no_equivalent_field",
+                    "fallback": "default_skills_list_if_required"
+                }
+            ]
         }
-    ]
+    }
 }

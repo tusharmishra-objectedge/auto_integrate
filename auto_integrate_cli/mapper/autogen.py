@@ -18,7 +18,7 @@ class AutogenMapper(BaseMapper):
         be a JSON array of objects. Each object must have a 'model' key which
         specifies the model to use, that is,  the list in filter_dict.model
         below. Each object should also have a 'key' key which specifies the
-        API kwy to use for the model. The API key is generated from the
+        API key to use for the model. The API key is generated from the
         OpenAI API.
         """
         super().__init__(api1, api2)
@@ -30,7 +30,7 @@ class AutogenMapper(BaseMapper):
                     # "gpt-3.5-turbo-16k",
                     "gpt-4",
                     # "gpt-4-32k",
-                    "gpt-4-1106-preview"
+                    "gpt-4-1106-preview",
                 },
             },
         )
@@ -124,6 +124,48 @@ class AutogenMapper(BaseMapper):
             fields, unique fields, etc. You propose transformations to
             harmonize data formats across APIs. You validate that the data is
             correctly formatted after transformation.
+
+            These are the possible transformations to be performed on the
+            source fields:
+            1. "none": No transformation is required for transfer of data.
+            2. "toInt": Transform to integer.
+            3. "toFloat": Transform to float.
+            4. "toString": Transform to string.
+            5. "toDateTime": Transform to date or date time. Highlight which
+               date format is used in both APIs using the keys
+               "api1DateFormat" and "api2DateFormat".
+            6. "toBool": Transform to boolean.
+            7. "toObject": Transform to dictionary. Highlight the possible
+               keys using the key "keys".
+            8. "toList": Transform to list. Highlight the possible items using
+               the key "items".
+            9. "toSubstr": Transform to substring. Highlight the possible
+               substring using the key "substring" with the start and end
+               indices.
+            10. "toConcat": Transform to concatenation.
+
+            If the transformation has specific values based on conditions, you
+            should highlight them using the key "conditions" and the value for
+            the transformation using the key "fallback". Some key conditions
+            are:
+            1. "ifNull": If the value is null.
+            2. "ifEmpty": If the value is empty.
+            3. "ifWrongFormat": If the value is in the wrong format and cannot
+                be transformed then use the key "fallback" to specify the
+                value to be used.
+            4. "ifLengthLessThan": If the length of the value is less than a
+                given value.
+            5. "ifLengthGreaterThan": If the length of the value is greater
+                than a given value.
+            6. "ifLengthEqualTo": If the length of the value is equal to a
+                given value.
+            7. "ifLengthLessThanOrEqualTo": If the length of the value is
+                less than or equal to a given value.
+            8. "ifLengthGreaterThanOrEqualTo": If the length of the value is
+                greater than or equal to a given value.
+            9. "isPrimary": If there are multiple fields in API 1 that map to
+                the same field in API 2, you should use this condition to
+                specify the primary field.
             """,
         )
         task_manager = autogen.AssistantAgent(
@@ -147,15 +189,63 @@ class AutogenMapper(BaseMapper):
 
             Example:
             {
-                "mapped_fields": {
-                    "field_name_from_api1": "field_name_from_api2",
-                    ...
+                "transformed_field_from_api_2": {
+                    "transformation": "transformation_type",
+                    "source_fields": [
+                        "field_name_from_api1",
+                        "field_name_from_api2"
+                    ],
+                    "conditions": [
+                        {
+                            "condition": "condition1",
+                            "fallback": "fallback_value"
+                        },
+                    ]
                 },
-                "unmapped_fields": [
-                    "field_name_from_api1",
-                    ...
-                ]
+                ...
             }
+
+            These are the possible transformations to be performed on the
+            source fields:
+            1. "none": No transformation is required for transfer of data.
+            2. "toInt": Transform to integer.
+            3. "toFloat": Transform to float.
+            4. "toString": Transform to string.
+            5. "toDateTime": Transform to date or date time. Highlight which
+               date format is used in both APIs using the keys
+               "api1DateFormat" and "api2DateFormat".
+            6. "toBool": Transform to boolean.
+            7. "toObject": Transform to dictionary. Highlight the possible
+               keys using the key "keys".
+            8. "toList": Transform to list. Highlight the possible items using
+               the key "items".
+            9. "toSubstr": Transform to substring. Highlight the possible
+               substring using the key "substring" with the start and end
+               indices.
+            10. "toConcat": Transform to concatenation.
+
+            If the transformation has specific values based on conditions, you
+            should highlight them using the key "conditions" and the value for
+            the transformation using the key "fallback". Some key conditions
+            are:
+            1. "ifNull": If the value is null.
+            2. "ifEmpty": If the value is empty.
+            3. "ifWrongFormat": If the value is in the wrong format and cannot
+                be transformed then use the key "fallback" to specify the
+                value to be used.
+            4. "ifLengthLessThan": If the length of the value is less than a
+                given value.
+            5. "ifLengthGreaterThan": If the length of the value is greater
+                than a given value.
+            6. "ifLengthEqualTo": If the length of the value is equal to a
+                given value.
+            7. "ifLengthLessThanOrEqualTo": If the length of the value is
+                less than or equal to a given value.
+            8. "ifLengthGreaterThanOrEqualTo": If the length of the value is
+                greater than or equal to a given value.
+            9. "isPrimary": If there are multiple fields in API 1 that map to
+                the same field in API 2, you should use this condition to
+                specify the primary field.
 
             Reply “TERMINATE” in the end when everything is done.""",
         )
