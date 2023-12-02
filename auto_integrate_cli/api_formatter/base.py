@@ -1,4 +1,9 @@
 import requests
+
+from auto_integrate_cli.settings.default import (
+    AUTOGEN_RERUN_CONDITION,
+    AUTOGEN_RERUN_LIMIT,
+)
 from .autogen import extract
 
 
@@ -43,7 +48,20 @@ class APIFormatter:
                 {obj["doc_website"]}. \n Now you need to extract information
                 and structure the API.
                 """
-                json_obj = extract(information)
+                # json_obj = extract(information)
+                runs = 0
+                result = None
+
+                while runs < AUTOGEN_RERUN_LIMIT:
+                    print()
+                    print(f"----- STARTING AUTOGEN EXTRACT RUN {runs} -----")
+                    print()
+                    result = extract(information)
+                    if result != AUTOGEN_RERUN_CONDITION:
+                        break
+
+                    runs += 1
+                json_obj = result
             apis.append(json_obj)
         return apis
 

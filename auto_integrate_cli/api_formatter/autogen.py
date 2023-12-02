@@ -2,6 +2,8 @@ import autogen
 import json
 import re
 
+from auto_integrate_cli.settings.default import AUTOGEN_RERUN_CONDITION
+
 
 def extract(information):
     """
@@ -51,111 +53,123 @@ def extract(information):
         name="InformationExtractor",
         llm_config=llm_config,
         system_message="""Information Extractor. You extract information
-        from the APIs. You know how to use the API documentation to extract
-        information about the API. You should reply after your documentation
-        lookup. You can scrape the documentation HTML content to extract
-        relevant information which can include the following:
-        1. Base URL of the API and the API endpoints
-        2. HTTP methods supported for each endpoint
-        3. Authentication mechanisms required
-        4. Sample request and response
-        5. Descriptions, data types, sample values, and constraints for each
-        field.
-        6. Any additional information or documentation that can be useful
+from the APIs. You know how to use the API documentation to extract
+information about the API. You should reply after your documentation lookup.
+You can scrape the documentation HTML content or take help from other agents
+to extract relevant information which can include the following:
+1. Base URL of the API and the API endpoints
+2. HTTP methods supported for each endpoint
+3. Authentication mechanisms required
+4. Sample request and response
+5. Descriptions, data types, sample values, and constraints for each field.
+6. Any additional information or documentation that can be useful.
 
-        In the following cases, you should ensure extra consideration:
-        1. If the field type is an Object, you should add a new key-value
-        pair to the field description to describe the children fields
-        under the key "children".
-        2. If the field type is a list, you should add a new key-value pair
-        to the field description to describe the list items under the key
-        "items".
-        3. If the field is self-generated, that is, the field is assigned
-        a value automatically by the API, you should set the constraint
-        "ignore" to true.
-        4. If the field is not required, you should set the constraint
-        "required" to false.
+In the following cases, you should ensure extra consideration:
+1. If the field type is an Object, you should add a new key-value pair to the
+field description to describe the children fields under the key "children".
+2. If the field type is a list, you should add a new key-value pair to the
+field description to describe the list items under the key "items".
+3. If the field is self-generated, that is, the field is assigned a value
+automatically by the API, you should set the constraint "ignore" to true.
+4. If the field is not required, you should set the constraint "required" to
+false.
 
-        Kindly note that the task is of a real-world nature and requires
-        you to use your skills to find the right information. You should
-        not make up information. You should reply after your documentation
-        lookup.
-        """,
+Kindly note that the task is of a real-world nature and requires you to use
+your skills to find the right information. You should not make up information.
+You should reply after your documentation lookup.""",
         code_execution_config={
-            "work_dir": "outputs/autogen",
-            "use_docker": False,
+            "work_dir": "web",
         },
     )
     data_format_analyzer = autogen.AssistantAgent(
         name="DataFormatAnalyzer",
         llm_config=llm_config,
         system_message="""Data Format Analyzer. You analyze the data
-        models from the extracted information. You can identify the data
-        types and structures in the data models. You can identify
-        equivalent data types across different APIs. You can identify
-        constraints on fields and classify them if they are required,
-        unique, or can be ignored for mapping. You can identify the right
-        description for each field.
+models from the extracted information. You can identify the data types and
+structures in the data models. You can identify equivalent data types across
+different APIs. You can identify constraints on fields and classify them if
+they are required, unique, or can be ignored for mapping. You can identify the
+right description for each field.
 
-        Kindly note that the task is of a real-world nature and requires
-        you to use your skills to find the right information. You should
-        not make up information. You should reply after your documentation
-        lookup.
-        """,
+Kindly note that the task is of a real-world nature and requires you to use
+your skills to find the right information. You should not make up information.
+You should reply after your documentation lookup.""",
     )
     task_manager = autogen.AssistantAgent(
         name="TaskManager",
         llm_config=llm_config,
-        system_message="""Task Manager. You manage the process of
-        structuring the API information. You assign tasks to other agents
-        and monitor their progress. You ensure that agents are working on
-        the right tasks and that tasks are completed on time. You
-        coordinate the work of other agents and ensure that the
-        structuring process is efficient and effective, and the output is
-        in JSON format. This is a deterministic task which requires
-        fact-checking, and mathematical problem-solving. The models'
-        performances on these tasks can be measured against clear benchmarks,
-        providing objective data on their accuracy.
+        system_message="""Task Manager. You manage the process of structuring
+the API information. You assign tasks to other agents and monitor their
+progress. You ensure that agents are working on the right tasks and that tasks
+are completed on time. You coordinate the work of other agents and ensure that
+the structuring process is efficient and effective, and the output is in JSON
+format. This is a deterministic task which requires fact-checking, and
+mathematical problem-solving. The models' performances on these tasks can be
+measured against clear benchmarks, providing objective data on their accuracy.
 
-        When you find an answer, verify the answer carefully. Include
-        verifiable evidence in your response if possible. Make sure that
-        the answer is complete, precise, contextually in accordance to
-        language skills and in JSON format.
+When you find an answer, verify the answer carefully. Include verifiable
+evidence in your response if possible. Make sure that the answer is complete,
+precise, contextually in accordance to language skills. The answer must be in
+a valid JSON format withoutany character, symbol or comments that is not
+allowed in JSON.
 
-        Example:
-        {
-            "field_name1": {
-                "type": "field_type",
-                "sample_value": "field_value",
-                "description": "field_description",
-                "constraints": {
-                    "required": true,
-                    "unique": false,
-                    "ignore": false
-                }
-            },
-            "field_name2": {
-                "type": "Object",
-                "sample_value": "field_value",
-                "description": "field_description",
-                "constraints": {
-                    "required": true,
-                    "unique": false,
-                    "ignore": false
-                },
-                children: {
-                    "child_field_name1": {
-                        ...
-                    },
-                    ...
-                }
-            },
+Example:
+{
+    "base_url": "https://api.example.com",
+    "authentication": {
+        "type": "auth_type",
+        "required": "true",
+        "details": {
+            "username": "username",
+            "password": "password",
+            "token": "token"
             ...
         }
+        ...
+    },
+    endpoints: {
+        "endpoint_name1": {
+            "method": "http_method",
+            "description": "endpoint_description",
+            "parameters": {
+                "field_name1": {
+                    "type": "field_type",
+                    "sample_value": "field_value",
+                    "description": "field_description",
+                    "constraints": {
+                        "required": true,
+                        "unique": false,
+                        "ignore": false
+                    }
+                    ...
+                },
+                "field_name2": {
+                    "type": "Object",
+                    "sample_value": "field_value",
+                    "description": "field_description",
+                    "constraints": {
+                        "required": true,
+                        "unique": false,
+                        "ignore": false
+                    },
+                    children: {
+                        "child_field_name1": {
+                            ...
+                        },
+                        ...
+                    }
+                    ...
+                },
+            },
+        },
+        ...
+    },
+}
 
-        Reply “TERMINATE” in the end when everything is done.""",
+Reply with the final JSON output and write “TERMINATE” in the end when
+everything is done with full satisfaction.""",
         code_execution_config={
-            "work_dir": "outputs/autogen",
+            "work_dir": "web",
             "use_docker": False,
         },
     )
@@ -167,8 +181,7 @@ def extract(information):
         .rstrip()
         .endswith("TERMINATE"),
         code_execution_config={
-            "work_dir": "outputs/autogen",
-            "use_docker": False,
+            "work_dir": "web",
         },
     )
 
@@ -188,8 +201,8 @@ def extract(information):
     user_proxy.initiate_chat(
         manager,
         message=f"""Following is the information for an API that must be
-        used to retrieve relevant information about the APIs to structure
-        the information. {information}""",
+used to retrieve relevant information about the APIs to structure the
+information. {information}""",
     )
     response = user_proxy.last_message()["content"]
     response = response.replace("\n", "")
@@ -209,5 +222,38 @@ def extract(information):
         jsonString = json.loads(jsonString)
     except json.JSONDecodeError as e:
         print(f"Error parsing JSON: {e}")
+
+        # Parse through TaskManager messages if JSON format fails
+        messages = user_proxy._oai_messages.values()
+        tm_messages = [
+            message
+            for messages_list in messages
+            for message in messages_list
+            if message.get("name") == "TaskManager"
+        ]
+
+        tm_messages.reverse()
+
+        for idx, message in enumerate(tm_messages):
+            msg_content = message["content"]
+            msg_content = msg_content.replace("\n", "")
+            matches = re.search(pattern, msg_content, re.MULTILINE)
+
+            jsonStringInternal = ""
+
+            if matches:
+                jsonStringInternal += matches.group(0)
+            try:
+                msg_json = json.loads(jsonStringInternal)
+                print(f"Found the valid JSON at TaskManager message {idx}")
+                return msg_json
+            except json.JSONDecodeError as e:
+                print(
+                    f"Error parsing JSON from TaskManager message {idx}: {e}"
+                )
+                print()
+                continue
+
+        return AUTOGEN_RERUN_CONDITION
 
     return jsonString
