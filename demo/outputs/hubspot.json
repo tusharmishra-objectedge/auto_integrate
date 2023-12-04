@@ -1,0 +1,245 @@
+{
+    "api1": {
+        "ttxid": {
+            "type": "str",
+            "sample_value": "1163383-10-171"
+        },
+        "certificate_number": {
+            "type": "str",
+            "sample_value": "1077174"
+        },
+        "ownership_name": {
+            "type": "str",
+            "sample_value": "Noam Argov Media Llc"
+        },
+        "dba_name": {
+            "type": "str",
+            "sample_value": "Noam Argov Media Llc"
+        },
+        "full_business_address": {
+            "type": "str",
+            "sample_value": "200 Buchanan St Apt 421"
+        },
+        "city": {
+            "type": "str",
+            "sample_value": "San Francisco"
+        },
+        "state": {
+            "type": "str",
+            "sample_value": "CA"
+        },
+        "business_zip": {
+            "type": "str",
+            "sample_value": "94102"
+        },
+        "dba_start_date": {
+            "type": "str",
+            "sample_value": "2017-08-03T00:00:00.000"
+        },
+        "dba_end_date": {
+            "type": "str",
+            "sample_value": "2023-10-20T00:00:00.000"
+        },
+        "location_start_date": {
+            "type": "str",
+            "sample_value": "2017-08-03T00:00:00.000"
+        },
+        "location_end_date": {
+            "type": "str",
+            "sample_value": "2023-10-20T00:00:00.000"
+        },
+        "naic_code": {
+            "type": "str",
+            "sample_value": "7100-7199"
+        },
+        "naic_code_description": {
+            "type": "str",
+            "sample_value": "Arts, Entertainment, and Recreation"
+        },
+        "parking_tax": {
+            "type": "bool",
+            "sample_value": false
+        },
+        "transient_occupancy_tax": {
+            "type": "bool",
+            "sample_value": false
+        },
+        "supervisor_district": {
+            "type": "str",
+            "sample_value": "8"
+        },
+        "neighborhoods_analysis_boundaries": {
+            "type": "str",
+            "sample_value": "Hayes Valley"
+        },
+        "location": {
+            "type": "dict",
+            "sample_value": {
+                "type": "Point",
+                "coordinates": [
+                    -122.426994,
+                    37.77188
+                ]
+            }
+        },
+        "uniqueid": {
+            "type": "str",
+            "sample_value": "1163383-10-171-1077174-7100-7199-08-03-2017"
+        },
+        ":@computed_region_6qbp_sg9q": {
+            "type": "str",
+            "sample_value": "27"
+        },
+        ":@computed_region_qgnn_b9vv": {
+            "type": "str",
+            "sample_value": "4"
+        },
+        ":@computed_region_26cr_cadq": {
+            "type": "str",
+            "sample_value": "5"
+        },
+        ":@computed_region_ajp5_b2md": {
+            "type": "str",
+            "sample_value": "9"
+        },
+        ":@computed_region_jwn9_ihcz": {
+            "type": "str",
+            "sample_value": "27"
+        }
+    },
+    "api2": {
+        "CompanyObject": {
+            "description": "Represents a company in the CRM.",
+            "type": "Object",
+            "properties": {
+                "id": {
+                    "type": "String",
+                    "description": "Unique identifier for the company.",
+                    "constraints": {
+                        "required": true,
+                        "unique": true,
+                        "ignore": true
+                    }
+                },
+                "properties": {
+                    "type": "Object",
+                    "description": "Contains various company-specific properties.",
+                    "properties": {
+                        "name": {
+                            "type": "String",
+                            "description": "Name of the company.",
+                            "constraints": {
+                                "required": true,
+                                "unique": false,
+                                "ignore": false
+                            }
+                        },
+                        "domain": {
+                            "type": "String",
+                            "description": "Website domain of the company.",
+                            "constraints": {
+                                "required": true,
+                                "unique": false,
+                                "ignore": false
+                            }
+                        },
+                        "createdate": {
+                            "type": "DateTime",
+                            "description": "Timestamp of the creation date in the database.",
+                            "constraints": {
+                                "required": false,
+                                "unique": false,
+                                "ignore": true
+                            }
+                        }
+                    }
+                },
+                "createdAt": {
+                    "type": "DateTime",
+                    "description": "Timestamp representing when the company was first created.",
+                    "constraints": {
+                        "required": false,
+                        "unique": false,
+                        "ignore": true
+                    }
+                },
+                "updatedAt": {
+                    "type": "DateTime",
+                    "description": "Timestamp representing the last time the company was updated.",
+                    "constraints": {
+                        "required": false,
+                        "unique": false,
+                        "ignore": true
+                    }
+                },
+                "archived": {
+                    "type": "Boolean",
+                    "description": "Indicates whether the company has been archived.",
+                    "constraints": {
+                        "required": false,
+                        "unique": false,
+                        "ignore": false
+                    }
+                }
+            }
+        },
+        "PaginationObject": {
+            "description": "Used to manage pagination through large lists.",
+            "type": "Object",
+            "properties": {
+                "paging": {
+                    "type": "Object",
+                    "description": "Container for pagination details.",
+                    "properties": {
+                        "next": {
+                            "type": "Object",
+                            "description": "Contains information about the next page.",
+                            "properties": {
+                                "after": {
+                                    "type": "String",
+                                    "description": "Cursor for the next page.",
+                                    "constraints": {
+                                        "required": false,
+                                        "unique": false,
+                                        "ignore": false
+                                    }
+                                },
+                                "link": {
+                                    "type": "String",
+                                    "description": "URL to request the next set of results.",
+                                    "constraints": {
+                                        "required": false,
+                                        "unique": false,
+                                        "ignore": true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "Authentication": {
+            "type": "Object",
+            "description": "Details the method for authenticating with the API.",
+            "properties": {
+                "APIKey": {
+                    "type": "String",
+                    "description": "API key provided as a query parameter for authentication.",
+                    "sample_value": "?hapikey=your_api_key",
+                    "constraints": {
+                        "required": true
+                    }
+                },
+                "OAuth": {
+                    "type": "String",
+                    "description": "OAuth 2.0 token provided in the Authorization header for authentication.",
+                    "constraints": {
+                        "required": true
+                    }
+                }
+            }
+        }
+    },
+    "mappings": []
+}

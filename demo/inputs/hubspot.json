@@ -1,0 +1,11 @@
+{
+    "api1": {
+        "type": "json_api",
+        "url": "https://data.sfgov.org/resource/g8m3-pdis.json"
+    },
+    "api2": {
+        "type": "json_data",
+        "data": {},
+        "doc_website": "https://developers.hubspot.com/docs/api/crm/companies"
+    }
+}

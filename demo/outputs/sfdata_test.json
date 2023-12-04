@@ -1,0 +1,301 @@
+{
+    "api1": {
+        "ttxid": {
+            "type": "String",
+            "sample_value": "1163383-10-171",
+            "description": "Transaction ID for the business transaction",
+            "constraints": {
+                "required": true,
+                "unique": true,
+                "ignore": false
+            }
+        },
+        "certificate_number": {
+            "type": "String",
+            "sample_value": "1077174",
+            "description": "Certificate number of the business",
+            "constraints": {
+                "required": true,
+                "unique": true,
+                "ignore": false
+            }
+        },
+        "ownership_name": {
+            "type": "String",
+            "sample_value": "Noam Argov Media Llc",
+            "description": "The registered name of the business owner",
+            "constraints": {
+                "required": true,
+                "unique": false,
+                "ignore": false
+            }
+        },
+        "dba_name": {
+            "type": "String",
+            "sample_value": "Noam Argov Media Llc",
+            "description": "The 'Doing Business As' name of the business",
+            "constraints": {
+                "required": false,
+                "unique": false,
+                "ignore": false
+            }
+        },
+        "full_business_address": {
+            "type": "String",
+            "sample_value": "200 Buchanan St Apt 421",
+            "description": "Complete address of the business",
+            "constraints": {
+                "required": true,
+                "unique": false,
+                "ignore": false
+            }
+        },
+        "city": {
+            "type": "String",
+            "sample_value": "San Francisco",
+            "description": "City in which the business is located",
+            "constraints": {
+                "required": true,
+                "unique": false,
+                "ignore": false
+            }
+        },
+        "state": {
+            "type": "String",
+            "sample_value": "CA",
+            "description": "State in which the business is located",
+            "constraints": {
+                "required": true,
+                "unique": false,
+                "ignore": false
+            }
+        },
+        "business_zip": {
+            "type": "String",
+            "sample_value": "94102",
+            "description": "Postal code for where the business is located",
+            "constraints": {
+                "required": true,
+                "unique": false,
+                "ignore": false
+            }
+        },
+        "dba_start_date": {
+            "type": "String",
+            "sample_value": "2017-08-03T00:00:00.000",
+            "description": "The start date of the business's DBA",
+            "constraints": {
+                "required": false,
+                "unique": false,
+                "ignore": false
+            }
+        },
+        "dba_end_date": {
+            "type": "String",
+            "sample_value": "2023-10-20T00:00:00.000",
+            "description": "The end date of the business's DBA",
+            "constraints": {
+                "required": false,
+                "unique": false,
+                "ignore": false
+            }
+        },
+        "location_start_date": {
+            "type": "String",
+            "sample_value": "2017-08-03T00:00:00.000",
+            "description": "The start date of the business at its location",
+            "constraints": {
+                "required": false,
+                "unique": false,
+                "ignore": false
+            }
+        },
+        "location_end_date": {
+            "type": "String",
+            "sample_value": "2023-10-20T00:00:00.000",
+            "description": "The end date of the business at its location",
+            "constraints": {
+                "required": false,
+                "unique": false,
+                "ignore": false
+            }
+        },
+        "naic_code": {
+            "type": "String",
+            "sample_value": "7100-7199",
+            "description": "Code representing the industry in which the business operates",
+            "constraints": {
+                "required": false,
+                "unique": false,
+                "ignore": false
+            }
+        },
+        "naic_code_description": {
+            "type": "String",
+            "sample_value": "Arts, Entertainment, and Recreation",
+            "description": "Description of the NAIC code",
+            "constraints": {
+                "required": false,
+                "unique": false,
+                "ignore": false
+            }
+        },
+        "parking_tax": {
+            "type": "Boolean",
+            "sample_value": false,
+            "description": "Indicates if the business is subject to parking tax",
+            "constraints": {
+                "required": true,
+                "unique": false,
+                "ignore": false
+            }
+        },
+        "transient_occupancy_tax": {
+            "type": "Boolean",
+            "sample_value": false,
+            "description": "Indicates if the business is subject to transient occupancy tax",
+            "constraints": {
+                "required": true,
+                "unique": false,
+                "ignore": false
+            }
+        },
+        "supervisor_district": {
+            "type": "String",
+            "sample_value": "8",
+            "description": "Supervisory district where the business is located",
+            "constraints": {
+                "required": false,
+                "unique": false,
+                "ignore": false
+            }
+        },
+        "neighborhoods_analysis_boundaries": {
+            "type": "String",
+            "sample_value": "Hayes Valley",
+            "description": "Neighborhood boundary for analysis purposes",
+            "constraints": {
+                "required": false,
+                "unique": false,
+                "ignore": false
+            }
+        },
+        "location": {
+            "type": "Object",
+            "sample_value": {
+                "type": "Point",
+                "coordinates": [
+                    -122.426994,
+                    37.77188
+                ]
+            },
+            "description": "Geographical coordinates and location type",
+            "constraints": {
+                "required": true,
+                "unique": false,
+                "ignore": false
+            },
+            "children": {
+                "type": {
+                    "type": "String",
+                    "sample_value": "Point",
+                    "description": "The type of location data",
+                    "constraints": {
+                        "required": true,
+                        "unique": false,
+                        "ignore": false
+                    }
+                },
+                "coordinates": {
+                    "type": "Array",
+                    "sample_value": [
+                        -122.426994,
+                        37.77188
+                    ],
+                    "description": "Longitude and latitude of the business",
+                    "constraints": {
+                        "required": true,
+                        "unique": false,
+                        "ignore": false
+                    }
+                }
+            }
+        },
+        "uniqueid": {
+            "type": "String",
+            "sample_value": "1163383-10-171-1077174-7100-7199-08-03-2017",
+            "description": "Unique identifier possibly composed of various business-related fields",
+            "constraints": {
+                "required": true,
+                "unique": true,
+                "ignore": false
+            }
+        },
+        "computed_region_fields": {
+            "description": "Fields prefixed with ':@computed_region_' are assumed to be system-generated fields for internal purposes, such as linking to dataset regions.",
+            "constraints": {
+                "required": false,
+                "unique": false,
+                "ignore": true
+            },
+            "children": {
+                ":@computed_region_6qbp_sg9q": {
+                    "type": "String",
+                    "sample_value": "27",
+                    "description": "Computed region ID"
+                },
+                ":@computed_region_qgnn_b9vv": {
+                    "type": "String",
+                    "sample_value": "4",
+                    "description": "Computed region ID"
+                },
+                ":@computed_region_26cr_cadq": {
+                    "type": "String",
+                    "sample_value": "5",
+                    "description": "Computed region ID"
+                },
+                ":@computed_region_ajp5_b2md": {
+                    "type": "String",
+                    "sample_value": "9",
+                    "description": "Computed region ID"
+                },
+                ":@computed_region_jwn9_ihcz": {
+                    "type": "String",
+                    "sample_value": "27",
+                    "description": "Computed region ID"
+                }
+            }
+        }
+    },
+    "api2": {
+        "createdAt": {
+            "type": "str",
+            "sample_value": "2023-10-19T02:52:09.946Z"
+        },
+        "name": {
+            "type": "str",
+            "sample_value": "Shawna Ratke"
+        },
+        "address": {
+            "type": "str",
+            "sample_value": "60715"
+        },
+        "city": {
+            "type": "str",
+            "sample_value": "East Estaland"
+        },
+        "state": {
+            "type": "str",
+            "sample_value": "Iowa"
+        },
+        "zip": {
+            "type": "str",
+            "sample_value": "91438-6505"
+        },
+        "id": {
+            "type": "str",
+            "sample_value": "1"
+        }
+    },
+    "mappings": []
+}

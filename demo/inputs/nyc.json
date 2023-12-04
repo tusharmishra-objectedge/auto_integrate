@@ -1,0 +1,11 @@
+{
+    "api1": {
+        "type": "json_api",
+        "url": "https://data.sfgov.org/resource/g8m3-pdis.json"
+    },
+    "api2": {
+        "type": "json_api",
+        "url": "https://data.cityofnewyork.us/resource/9cw8-7heb.json",
+        "doc_website": "https://dev.socrata.com/foundry/data.cityofnewyork.us/9cw8-7heb"
+    }
+}

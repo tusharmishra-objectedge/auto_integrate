@@ -1,0 +1,107 @@
+{
+    "api1": {
+        "ttxid": {
+            "type": "str",
+            "sample_value": "0338569-02-999"
+        },
+        "certificate_number": {
+            "type": "str",
+            "sample_value": "0338569"
+        },
+        "ownership_name": {
+            "type": "str",
+            "sample_value": "Hughes Paul G"
+        },
+        "dba_name": {
+            "type": "str",
+            "sample_value": "Paul Hughes General Contractor"
+        },
+        "full_business_address": {
+            "type": "str",
+            "sample_value": "9 Quail Way"
+        },
+        "city": {
+            "type": "str",
+            "sample_value": "San Anselmo"
+        },
+        "state": {
+            "type": "str",
+            "sample_value": "CA"
+        },
+        "business_zip": {
+            "type": "str",
+            "sample_value": "94960-1220"
+        },
+        "dba_start_date": {
+            "type": "str",
+            "sample_value": "2013-11-04T00:00:00.000"
+        },
+        "dba_end_date": {
+            "type": "str",
+            "sample_value": "2018-06-30T00:00:00.000"
+        },
+        "location_start_date": {
+            "type": "str",
+            "sample_value": "2013-11-04T00:00:00.000"
+        },
+        "location_end_date": {
+            "type": "str",
+            "sample_value": "2014-01-12T00:00:00.000"
+        },
+        "parking_tax": {
+            "type": "bool",
+            "sample_value": false
+        },
+        "transient_occupancy_tax": {
+            "type": "bool",
+            "sample_value": false
+        },
+        "location": {
+            "type": "dict",
+            "sample_value": {
+                "type": "Point",
+                "coordinates": [
+                    -122.5675,
+                    37.998657
+                ]
+            }
+        },
+        "uniqueid": {
+            "type": "str",
+            "sample_value": "0338569-02-999-0338569--11-04-2013"
+        }
+    },
+    "api2": {
+        "domain_name": {
+            "type": "String",
+            "sample_value": "0-1.nyc",
+            "description": "The unique name of the domain registered.",
+            "constraints": {
+                "required": true,
+                "unique": true,
+                "ignore": false
+            }
+        },
+        "domain_registration_date": {
+            "type": "String",
+            "sample_value": "2017-07-27T14:24:15.000",
+            "description": "The registration date and time of the domain, following the ISO 8601 standard.",
+            "constraints": {
+                "required": true,
+                "unique": false,
+                "ignore": false
+            }
+        },
+        "nexus_category": {
+            "type": "String",
+            "sample_value": "INDIV",
+            "description": "A category code indicating the registrant's relationship to the domain's nation of origin.",
+            "constraints": {
+                "required": true,
+                "unique": false,
+                "ignore": false
+            }
+        }
+    },
+    "mappings": []
+}
