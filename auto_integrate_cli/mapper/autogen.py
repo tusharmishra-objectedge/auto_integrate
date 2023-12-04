@@ -85,169 +85,146 @@ class AutogenMapper(BaseMapper):
             name="SchemaAnalyzer",
             llm_config=llm_config,
             system_message="""Schema Analyzer. You analyze the schema or data
-            models provided by both APIs. You can detect and understand the
-            data types and structures in both schemas, identify equivalent
-            data types across different APIs, and provide recommendations
-            for field mappings based on data types, constraints, and
-            language skills.
+models provided by both APIs. You can detect and understand the data types and
+structures in both schemas, identify equivalent data types across different
+APIs, and provide recommendations for field mappings based on data types,
+constraints, and language skills.
 
-            In the following cases, you should ensure extra consideration:
-            1. If the field in API 2 is a list, you may consider possibility
-            of mapping multiple fields from API 1 to API 2.
-            2. If the field in API 2 is a dictionary, you may consider mapping
-            multiple fields from API 1 to API 2 to the keys of the dictionary.
-            3. If one field in API2 has multiple possible fields in API1, you
-            must consider language skills and context to determine the correct
-            mapping.
-            4. If fields have descriptions or constraints, you should consider
-            them when mapping fields.
-            """,
+In the following cases, you should ensure extra consideration:
+1. If the field in API 2 is a list, you may consider possibility of mapping
+multiple fields from API 1 to API 2.
+2. If the field in API 2 is a dictionary, you may consider mapping multiple
+fields from API 1 to API 2 to the keys of the dictionary.
+3. If one field in API2 has multiple possible fields in API1, you must
+consider language skills and context to determine the correct mapping.
+4. If fields have descriptions or constraints, you should consider them when
+mapping fields.""",
         )
         naming_convention_analyzer = autogen.AssistantAgent(
             name="NamingConventionAnalyzer",
             llm_config=llm_config,
             system_message="""Naming Convention Analyzer. You analyze the
-            naming conventions and semantics used in both APIs and recommend
-            field mappings based on language skills. You use NLP to interpret
-            field names and understand their meaning. You can identify fields
-            with similar semantics but different naming conventions, and
-            fields with different semantics but similar naming conventions.
-            """,
+naming conventions and semantics used in both APIs and recommend field
+mappings based on language skills. You use NLP to interpret field names and
+understand their meaning. You can identify fields with similar semantics but
+different naming conventions, and fields with different semantics but similar
+naming conventions.""",
         )
         data_format_compatibility_analyzer = autogen.AssistantAgent(
             name="DataFormatCompatibilityAnalyzer",
             llm_config=llm_config,
             system_message="""Data Format Compatibility Analyzer. You ensure
-            that the data formats are compatible between the APIs. You check
-            for field format discrepancies such as date-time formats, number
-            formats, etc. You check for field constraints such as required
-            fields, unique fields, etc. You propose transformations to
-            harmonize data formats across APIs. You validate that the data is
-            correctly formatted after transformation.
+that the data formats are compatible between the APIs. You check for field
+format discrepancies such as date-time formats, number formats, etc. You check
+for field constraints such as required fields, unique fields, etc. You propose
+transformations to harmonize data formats across APIs. You validate that the
+data is correctly formatted after transformation.
 
-            These are the possible transformations to be performed on the
-            source fields:
-            1. "none": No transformation is required for transfer of data.
-            2. "toInt": Transform to integer.
-            3. "toFloat": Transform to float.
-            4. "toString": Transform to string.
-            5. "toDateTime": Transform to date or date time. Highlight which
-               date format is used in both APIs using the keys
-               "api1DateFormat" and "api2DateFormat".
-            6. "toBool": Transform to boolean.
-            7. "toObject": Transform to dictionary. Highlight the possible
-               keys using the key "keys".
-            8. "toList": Transform to list. Highlight the possible items using
-               the key "items".
-            9. "toSubstr": Transform to substring. Highlight the possible
-               substring using the key "substring" with the start and end
-               indices.
-            10. "toConcat": Transform to concatenation.
+These are the possible transformations to be performed on the source fields:
+1. "none": No transformation is required for transfer of data.
+2. "toInt": Transform to integer.
+3. "toFloat": Transform to float.
+4. "toString": Transform to string.
+5. "toDateTime": Transform to date or date time. Highlight which date format
+    is used in both APIs using the keys "api1DateFormat" and "api2DateFormat".
+6. "toBool": Transform to boolean.
+7. "toObject": Transform to dictionary. Highlight the possible keys using the
+    key "keys".
+8. "toList": Transform to list. Highlight the possible items using the key
+    "items".
+9. "toSubstr": Transform to substring. Highlight the possible substring using
+    the key "substring" with the start and end indices.
+10. "toConcat": Transform to concatenation.
 
-            If the transformation has specific values based on conditions, you
-            should highlight them using the key "conditions" and the value for
-            the transformation using the key "fallback". Some key conditions
-            are:
-            1. "ifNull": If the value is null.
-            2. "ifEmpty": If the value is empty.
-            3. "ifWrongFormat": If the value is in the wrong format and cannot
-                be transformed then use the key "fallback" to specify the
-                value to be used.
-            4. "ifLengthLessThan": If the length of the value is less than a
-                given value.
-            5. "ifLengthGreaterThan": If the length of the value is greater
-                than a given value.
-            6. "ifLengthEqualTo": If the length of the value is equal to a
-                given value.
-            7. "ifLengthLessThanOrEqualTo": If the length of the value is
-                less than or equal to a given value.
-            8. "ifLengthGreaterThanOrEqualTo": If the length of the value is
-                greater than or equal to a given value.
-            9. "isPrimary": If there are multiple fields in API 1 that map to
-                the same field in API 2, you should use this condition to
-                specify the primary field.
-            """,
+If the transformation has specific values based on conditions, you should
+highlight them using the key "conditions" and the value for the transformation
+using the key "fallback". Some key conditions are:
+1. "ifNull": If the value is null.
+2. "ifEmpty": If the value is empty.
+3. "ifWrongFormat": If the value is in the wrong format and cannot be
+    transformed then use the key "fallback" to specify the value to be used.
+4. "ifLengthLessThan": If the length of the value is less than a given value.
+5. "ifLengthGreaterThan": If the length of the value is greater than a given
+    value.
+6. "ifLengthEqualTo": If the length of the value is equal to a given value.
+7. "ifLengthLessThanOrEqualTo": If the length of the value is less than or
+    equal to a given value.
+8. "ifLengthGreaterThanOrEqualTo": If the length of the value is greater than
+    or equal to a given value.
+9. "isPrimary": If there are multiple fields in API 1 that map to the same
+    field in API 2, you should use this condition to specify the primary
+    field.""",
         )
         task_manager = autogen.AssistantAgent(
             name="TaskManager",
             llm_config=llm_config,
             system_message="""Task Manager. You manage the mapping process.
-            You assign tasks to other agents and monitor their progress. You
-            ensure that agents are working on the right tasks and that tasks
-            are completed on time. You coordinate the work of other agents and
-            ensure that the mapping process is efficient and effective, and
-            the output is in JSON format. This is a deterministic task which
-            requires grammar correction, fact-checking, and mathematical
-            problem-solving. The models' performances on these tasks can be
-            measured against clear benchmarks, providing objective data on
-            their accuracy.
+You assign tasks to other agents and monitor their progress. You ensure
+that agents are working on the right tasks and that tasks are completed on
+time. You coordinate the work of other agents and ensure that the mapping
+process is efficient and effective, and the output is in JSON format. This is
+a deterministic task which requires grammar correction, fact-checking, and
+mathematical problem-solving. The models' performances on these tasks can be
+measured against clear benchmarks, providing objective data on their accuracy.
 
-            When you find an answer, verify the answer carefully. Include
-            verifiable evidence in your response if possible. Make sure that
-            the answer is complete, precise, contextually in accordance to
-            language skills and in JSON format.
+When you find an answer, verify the answer carefully. Include verifiable
+evidence in your response if possible. Make sure that the answer is complete,
+precise, contextually in accordance to language skills and in JSON format.
 
-            Example:
+Example:
+{
+    "transformed_field_from_api_2": {
+        "transformation": "transformation_type",
+        "source_fields": [
+            "field_name_from_api1",
+            "field_name_from_api2"
+        ],
+        "conditions": [
             {
-                "transformed_field_from_api_2": {
-                    "transformation": "transformation_type",
-                    "source_fields": [
-                        "field_name_from_api1",
-                        "field_name_from_api2"
-                    ],
-                    "conditions": [
-                        {
-                            "condition": "condition1",
-                            "fallback": "fallback_value"
-                        },
-                    ]
-                },
-                ...
-            }
+                "condition": "condition1",
+                "fallback": "fallback_value"
+            },
+        ]
+    },
+    ...
+}
 
-            These are the possible transformations to be performed on the
-            source fields:
-            1. "none": No transformation is required for transfer of data.
-            2. "toInt": Transform to integer.
-            3. "toFloat": Transform to float.
-            4. "toString": Transform to string.
-            5. "toDateTime": Transform to date or date time. Highlight which
-               date format is used in both APIs using the keys
-               "api1DateFormat" and "api2DateFormat".
-            6. "toBool": Transform to boolean.
-            7. "toObject": Transform to dictionary. Highlight the possible
-               keys using the key "keys".
-            8. "toList": Transform to list. Highlight the possible items using
-               the key "items".
-            9. "toSubstr": Transform to substring. Highlight the possible
-               substring using the key "substring" with the start and end
-               indices.
-            10. "toConcat": Transform to concatenation.
+These are the possible transformations to be performed on the source fields:
+1. "none": No transformation is required for transfer of data.
+2. "toInt": Transform to integer.
+3. "toFloat": Transform to float.
+4. "toString": Transform to string.
+5. "toDateTime": Transform to date or date time. Highlight which date format
+    is used in both APIs using the keys "api1DateFormat" and "api2DateFormat".
+6. "toBool": Transform to boolean.
+7. "toObject": Transform to dictionary. Highlight the possible keys using the
+    key "keys".
+8. "toList": Transform to list. Highlight the possible items using the key
+    "items".
+9. "toSubstr": Transform to substring. Highlight the possible substring using
+    the key "substring" with the start and end indices.
+10. "toConcat": Transform to concatenation.
 
-            If the transformation has specific values based on conditions, you
-            should highlight them using the key "conditions" and the value for
-            the transformation using the key "fallback". Some key conditions
-            are:
-            1. "ifNull": If the value is null.
-            2. "ifEmpty": If the value is empty.
-            3. "ifWrongFormat": If the value is in the wrong format and cannot
-                be transformed then use the key "fallback" to specify the
-                value to be used.
-            4. "ifLengthLessThan": If the length of the value is less than a
-                given value.
-            5. "ifLengthGreaterThan": If the length of the value is greater
-                than a given value.
-            6. "ifLengthEqualTo": If the length of the value is equal to a
-                given value.
-            7. "ifLengthLessThanOrEqualTo": If the length of the value is
-                less than or equal to a given value.
-            8. "ifLengthGreaterThanOrEqualTo": If the length of the value is
-                greater than or equal to a given value.
-            9. "isPrimary": If there are multiple fields in API 1 that map to
-                the same field in API 2, you should use this condition to
-                specify the primary field.
+If the transformation has specific values based on conditions, you should
+highlight them using the key "conditions" and the value for the transformation
+using the key "fallback". Some key conditions are:
+1. "ifNull": If the value is null.
+2. "ifEmpty": If the value is empty.
+3. "ifWrongFormat": If the value is in the wrong format and cannot be
+    transformed then use the key "fallback" to specify the value to be used.
+4. "ifLengthLessThan": If the length of the value is less than a given value.
+5. "ifLengthGreaterThan": If the length of the value is greater than a
+    given value.
+6. "ifLengthEqualTo": If the length of the value is equal to a given value.
+7. "ifLengthLessThanOrEqualTo": If the length of the value is less than or
+    equal to a given value.
+8. "ifLengthGreaterThanOrEqualTo": If the length of the value is greater than
+    or equal to a given value.
+9. "isPrimary": If there are multiple fields in API 1 that map to the same
+    field in API 2, you should use this condition to specify the primary
+    field.
 
-            Reply “TERMINATE” in the end when everything is done.""",
+Reply “TERMINATE” in the end when everything is done.""",
         )
         user_proxy = autogen.UserProxyAgent(
             name="UserProxy",
@@ -256,10 +233,6 @@ class AutogenMapper(BaseMapper):
             is_termination_msg=lambda x: x.get("content", "")
             .rstrip()
             .endswith("TERMINATE"),
-            code_execution_config={
-                "work_dir": "outputs/autogen",
-                "use_docker": False,
-            },
         )
 
         groupchat = autogen.GroupChat(
@@ -282,8 +255,6 @@ class AutogenMapper(BaseMapper):
             api2: {self.api2}""",
         )
 
-
-
         response = user_proxy.last_message()["content"]
         response = response.replace("\n", "")
 
@@ -305,13 +276,17 @@ class AutogenMapper(BaseMapper):
 
             # Parse through TaskManager messages if JSON format fails
             messages = user_proxy._oai_messages.values()
-            tm_messages = [message for messages_list in messages for message in messages_list if
-                           message.get('name') == 'TaskManager']
+            tm_messages = [
+                message
+                for messages_list in messages
+                for message in messages_list
+                if message.get("name") == "TaskManager"
+            ]
 
             tm_messages.reverse()
 
-            for message in tm_messages:
-                msg_content = message['content']
+            for idx, message in enumerate(tm_messages):
+                msg_content = message["content"]
                 msg_content = msg_content.replace("\n", "")
                 matches = re.search(pattern, msg_content, re.MULTILINE)
 
@@ -321,13 +296,16 @@ class AutogenMapper(BaseMapper):
                     jsonStringInternal += matches.group(0)
                 try:
                     msg_json = json.loads(jsonStringInternal)
+                    print(f"Found the valid JSON at TaskManager message {idx}")
                     return msg_json
                 except json.JSONDecodeError as e:
-                    print(f"Error parsing JSON from TaskManager: {e}")
+                    print(
+                        f"Error parsing JSON from TaskManager message {idx}: \
+                            {e}"
+                    )
                     print()
                     continue
 
-            return(AUTOGEN_RERUN_CONDITION)
-
+            return AUTOGEN_RERUN_CONDITION
 
         return jsonString

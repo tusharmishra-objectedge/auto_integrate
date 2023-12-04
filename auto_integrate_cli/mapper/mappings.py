@@ -4,12 +4,17 @@ from auto_integrate_cli.mapper.openai import OpenAIAPIMapper
 from auto_integrate_cli.mapper.llama2_13b_chat import LLama2Mapper
 from auto_integrate_cli.mapper.autogen import AutogenMapper
 
-from auto_integrate_cli.settings.default import AUTOGEN_RERUN_CONDITION, AUTOGEN_RERUN_LIMIT
+from auto_integrate_cli.settings.default import (
+    AUTOGEN_RERUN_CONDITION,
+    AUTOGEN_RERUN_LIMIT,
+)
 
 
 def map_fuzzy(api1, api2):
     """
-    Map API 1 to API 2 using fuzzy string matching
+    Map API 1 to API 2 using fuzzy string matching.
+
+    Note: This function is not used in the current version.
     """
     fuzz_mapper = FuzzMapper(api1, api2)
     l2r_mapping, r2l_mapping = fuzz_mapper.map()
@@ -22,7 +27,9 @@ def map_fuzzy(api1, api2):
 
 def map_jaccard(api1, api2):
     """
-    Map API 1 to API 2 using Jaccard similarity
+    Map API 1 to API 2 using Jaccard similarity.
+
+    Note: This function is not used in the current version.
     """
     jaccard_mapper = JaccardSimilarityMapper(api1, api2)
     l2r_mapping, r2l_mapping = jaccard_mapper.map()
@@ -35,7 +42,9 @@ def map_jaccard(api1, api2):
 
 def map_openai(api1, api2, engine="text-davinci-003"):
     """
-    Map API 1 to API 2 using OpenAI API
+    Map API 1 to API 2 using OpenAI API.
+
+    Note: This function is not used in the current version.
     """
     openai_mapper = OpenAIAPIMapper(api1, api2)
     return {
@@ -46,7 +55,9 @@ def map_openai(api1, api2, engine="text-davinci-003"):
 
 def map_llama2(api1, api2):
     """
-    Map API 1 to API 2 using LLama2
+    Map API 1 to API 2 using LLama2.
+
+    Note: This function is not used in the current version.
     """
     llama2_mapper = LLama2Mapper(api1, api2)
     return {
@@ -57,19 +68,25 @@ def map_llama2(api1, api2):
 
 def map_autogen(api1, api2):
     """
-    Map API 1 to API 2 using Autogen, runs up to AUTOGEN_RERUN_LIMIT times, which is defined in settings.
+    Map API 1 to API 2 using Autogen AI multi-agent conversational framework.
+
+    This function runs upto AUTOGEN_RERUN_LIMIT times, which value is defined
+    in settings.default.py. If AUTOGEN_RERUN_CONDITION is not met, then it
+    returns None. Otherwise, it returns the result of the mapping.
     """
     autogen_mapper = AutogenMapper(api1, api2)
     runs = 0
     result = None
 
-    while (runs < AUTOGEN_RERUN_LIMIT):
+    while runs < AUTOGEN_RERUN_LIMIT:
+        print()
+        print(f"----- STARTING AUTOGEN RUN {runs} -----")
+        print()
         result = autogen_mapper.map()
         if result != AUTOGEN_RERUN_CONDITION:
             break
 
-        runs +=1
-
+        runs += 1
 
     return {
         "type": "autogen",
@@ -82,6 +99,8 @@ def mappings(api1, api2, manual_L2R=None, manual_R2L=None):
     Map API 1 to API 2
 
     This function uses multiple available classes to map API 1 to API 2.
+
+    Note: This function is not used in the current version.
     """
     output_obj = {}
     output_obj["api1"] = api1
