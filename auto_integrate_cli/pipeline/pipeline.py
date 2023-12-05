@@ -43,11 +43,12 @@ class Pipeline:
 
 
                 # Check conditions, if applied, source fields will be conditionVal
-                conditions = self.mapping[targetKey]["conditions"]
-                if conditions:
-                    conditionVal = self.handleConditions(conditions, datum[sourceFields[0]])
-                    if conditionVal != PIPELINE_CONDITION_DEFAULT:
-                        sourceFields = conditionVal
+                if "conditions" in self.mapping[targetKey]:
+                    conditions = self.mapping[targetKey]["conditions"]
+                    if conditions:
+                        conditionVal = self.handleConditions(conditions, datum[sourceFields[0]])
+                        if conditionVal != PIPELINE_CONDITION_DEFAULT:
+                            sourceFields = conditionVal
 
                 transformation = self.mapping[targetKey]["transformation"]
 
