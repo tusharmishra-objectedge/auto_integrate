@@ -14,6 +14,8 @@ from auto_integrate_cli.mapper.mappings import mappings, map_autogen
 # Pipeline
 from auto_integrate_cli.pipeline.pipeline import Pipeline
 
+import pdb
+
 
 def get_args():
     """
@@ -94,6 +96,7 @@ def main():
     file_handler.write(documentScraperOutput)
     print('Wrote document scraper output to documentScraperOutput.json')
 
+    file_handler.output_file = output_file
 
     output_obj = map_autogen(api1, api2, logger)
     print(f"\nWriting output file at path: {output_file} ...\n")
@@ -101,11 +104,11 @@ def main():
 
     mapping = output_obj["mapped"]
 
-    # pipeline = Pipeline(api1URL, api2URL, mapping, logger)
-    # mapped_data = pipeline.map_data(10)
-    # for datum in mapped_data:
-    #     print(datum)
-    # pipeline.generate_pipeline()
+    pipeline = Pipeline(api1URL, api2URL, mapping, logger)
+    mapped_data = pipeline.map_data(10)
+    for datum in mapped_data:
+        print(datum)
+    pipeline.generate_pipeline()
 
 
 if __name__ == "__main__":

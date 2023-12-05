@@ -175,9 +175,12 @@ class Pipeline:
         elif transformation == "toConcat":
             # Grab source fields from datum and concatenate them
             fieldsToConcat = []
+            print('Concatenating fields')
+            print(sourceFields)
             for field in sourceFields:
                 fieldsToConcat.append(datum[field])
-            mapped_datum[targetKey] = PIPELINE_CONCAT_DEFAULT.join(fieldsToConcat)
+            transformedValue = PIPELINE_CONCAT_DEFAULT.join(fieldsToConcat)
+            return transformedValue
 
 
     def handleConditions(self, conditions, sourceField):
