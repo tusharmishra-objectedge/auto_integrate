@@ -5,7 +5,7 @@ import re
 from auto_integrate_cli.settings.default import AUTOGEN_RERUN_CONDITION
 
 
-def extract(information):
+def extract(information, logger=None):
     """
     Extract information from the API documentation.
 
@@ -42,9 +42,9 @@ def extract(information):
                 "model": {
                     # "gpt-3.5-turbo",
                     # "gpt-3.5-turbo-16k",
-                    # "gpt-4",
+                    "gpt-4",
                     # "gpt-4-32k",
-                    "gpt-4-1106-preview"
+                    # "gpt-4-1106-preview"
                 },
             },
         )
@@ -110,8 +110,8 @@ measured against clear benchmarks, providing objective data on their accuracy.
 When you find an answer, verify the answer carefully. Include verifiable
 evidence in your response if possible. Make sure that the answer is complete,
 precise, contextually in accordance to language skills. The answer must be in
-a valid JSON format withoutany character, symbol or comments that is not
-allowed in JSON.
+a valid JSON format without any character, symbol or comments that is not
+allowed in JSON. Do not abstract or concatenate the answer. Do not make up any information.
 
 Example:
 {
@@ -221,6 +221,9 @@ information. {information}""",
     try:
         jsonString = json.loads(jsonString)
     except json.JSONDecodeError as e:
+        if logger:
+            logger.append(f"Error parsing extract Task Manager output JSON: {e}")
+            logger.append(f"Checking for valid JSON in previous Task Manager messages")
         print(f"Error parsing JSON: {e}")
 
         # Parse through TaskManager messages if JSON format fails
@@ -246,11 +249,13 @@ information. {information}""",
             try:
                 msg_json = json.loads(jsonStringInternal)
                 print(f"Found the valid JSON at TaskManager message {idx}")
+                if logger:
+                    logger.append(f"Found the valid JSON at TaskManager message {idx}")
                 return msg_json
             except json.JSONDecodeError as e:
-                print(
-                    f"Error parsing JSON from TaskManager message {idx}: {e}"
-                )
+                if logger:
+                    logger.append(f"Error parsing JSON from TaskManager message {idx}: {e}")
+                print(f"Error parsing JSON from TaskManager message {idx}: {e}")
                 print()
                 continue
 

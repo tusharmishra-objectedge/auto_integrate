@@ -7,7 +7,7 @@ from auto_integrate_cli.settings.default import AUTOGEN_RERUN_CONDITION
 
 
 class AutogenMapper(BaseMapper):
-    def __init__(self, api1, api2):
+    def __init__(self, api1, api2, logger=None):
         """
         Initialize the AutogenMapper class.
 
@@ -21,7 +21,7 @@ class AutogenMapper(BaseMapper):
         API key to use for the model. The API key is generated from the
         OpenAI API.
         """
-        super().__init__(api1, api2)
+        super().__init__(api1, api2, logger)
         self.config_list = autogen.config_list_from_json(
             env_or_file="OAI_CONFIG_LIST",
             filter_dict={
@@ -272,6 +272,9 @@ Reply “TERMINATE” in the end when everything is done.""",
         try:
             jsonString = json.loads(jsonString)
         except json.JSONDecodeError as e:
+            if self.logger:
+                self.logger.append(f"Error parsing Task Manager output JSON: {e}")
+                self.logger.append("Checking previous Task Manager messages for valid JSON")
             print(f"Error parsing JSON: {e}")
 
             # Parse through TaskManager messages if JSON format fails
@@ -296,13 +299,12 @@ Reply “TERMINATE” in the end when everything is done.""",
                     jsonStringInternal += matches.group(0)
                 try:
                     msg_json = json.loads(jsonStringInternal)
+                    self.logger.append(f"Found the valid JSON at TaskManager message {idx}")
                     print(f"Found the valid JSON at TaskManager message {idx}")
                     return msg_json
                 except json.JSONDecodeError as e:
-                    print(
-                        f"Error parsing JSON from TaskManager message {idx}: \
-                            {e}"
-                    )
+                    print(f"Error parsing JSON from TaskManager message {idx}: {e}")
+                    self.logger.append(f"Error parsing JSON from TaskManager message {idx}: {e}")
                     print()
                     continue
 
