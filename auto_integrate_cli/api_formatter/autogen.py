@@ -42,9 +42,9 @@ def extract(information, logger=None):
                 "model": {
                     # "gpt-3.5-turbo",
                     # "gpt-3.5-turbo-16k",
-                    "gpt-4",
+                    # "gpt-4",
                     # "gpt-4-32k",
-                    # "gpt-4-1106-preview"
+                    "gpt-4-1106-preview"
                 },
             },
         )
@@ -224,7 +224,6 @@ information. {information}""",
         if logger:
             logger.append(f"Error parsing extract Task Manager output JSON: {e}")
             logger.append(f"Checking for valid JSON in previous Task Manager messages")
-        print(f"Error parsing JSON: {e}")
 
         # Parse through TaskManager messages if JSON format fails
         messages = user_proxy._oai_messages.values()
@@ -248,15 +247,12 @@ information. {information}""",
                 jsonStringInternal += matches.group(0)
             try:
                 msg_json = json.loads(jsonStringInternal)
-                print(f"Found the valid JSON at TaskManager message {idx}")
                 if logger:
                     logger.append(f"Found the valid JSON at TaskManager message {idx}")
                 return msg_json
             except json.JSONDecodeError as e:
                 if logger:
                     logger.append(f"Error parsing JSON from TaskManager message {idx}: {e}")
-                print(f"Error parsing JSON from TaskManager message {idx}: {e}")
-                print()
                 continue
 
         return AUTOGEN_RERUN_CONDITION

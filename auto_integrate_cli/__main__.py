@@ -14,8 +14,6 @@ from auto_integrate_cli.mapper.mappings import mappings, map_autogen
 # Pipeline
 from auto_integrate_cli.pipeline.pipeline import Pipeline
 
-import pdb
-
 
 def get_args():
     """
