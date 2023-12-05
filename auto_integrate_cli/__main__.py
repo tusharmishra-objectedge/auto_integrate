@@ -71,7 +71,10 @@ def main():
     output_file = os.path.join(DEFAULT_CWD, args.output_file)
 
     # Logger
-    logger = LogHandler("logs.txt")
+    logsPath = "logs"
+    if not os.path.exists(logsPath):
+        os.makedirs(logsPath)
+    logger = LogHandler("logs/logs.txt")
     logger.createLogFile()
 
     print(f"\nReading input file at path: {input_file} ...\n")
