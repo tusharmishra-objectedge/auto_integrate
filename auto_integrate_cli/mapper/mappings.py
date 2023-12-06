@@ -66,7 +66,7 @@ def map_llama2(api1, api2):
     }
 
 
-def map_autogen(api1, api2):
+def map_autogen(api1, api2, logger=None):
     """
     Map API 1 to API 2 using Autogen AI multi-agent conversational framework.
 
@@ -74,17 +74,26 @@ def map_autogen(api1, api2):
     in settings.default.py. If AUTOGEN_RERUN_CONDITION is not met, then it
     returns None. Otherwise, it returns the result of the mapping.
     """
-    autogen_mapper = AutogenMapper(api1, api2)
+    if logger:
+        logger.append(f"Starting autogen mapper")
+    autogen_mapper = AutogenMapper(api1, api2, logger)
     runs = 0
     result = None
 
     while runs < AUTOGEN_RERUN_LIMIT:
+        if logger:
+            logger.append(f"Starting autogen mapping run {runs}")
         print()
         print(f"----- STARTING AUTOGEN RUN {runs} -----")
         print()
         result = autogen_mapper.map()
         if result != AUTOGEN_RERUN_CONDITION:
+            if logger:
+                logger.append(f"Autogen mapping run {runs} successful")
             break
+        else:
+            if logger:
+                logger.append(f"Autogen mapping run {runs} failed")
 
         runs += 1
 

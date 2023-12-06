@@ -1,4 +1,5 @@
 import requests
+from time import sleep
 
 from auto_integrate_cli.settings.default import (
     AUTOGEN_RERUN_CONDITION,
@@ -8,7 +9,7 @@ from .autogen import extract
 
 
 class APIFormatter:
-    def __init__(self, input_obj):
+    def __init__(self, input_obj, logger=None):
         """
         Constructor
 
@@ -21,8 +22,11 @@ class APIFormatter:
             None
         """
         self.input_obj = input_obj
+        self.logger = logger
 
     def format(self):
+        if self.logger:
+            self.logger.append(f"Formatting APIs: {self.input_obj['api1']}\n{self.input_obj['api2']}")
         api1_details = self.input_obj["api1"]
         api2_details = self.input_obj["api2"]
 
@@ -31,12 +35,20 @@ class APIFormatter:
         for obj in api1_details, api2_details:
             json_obj = {}
             if obj["type"] == "json_api":
+                if self.logger:
+                    self.logger.append(f'Getting API details from URL')
                 json_obj = self.get_json_api(obj["url"])
             if obj["type"] == "json_dict":
+                if self.logger:
+                    self.logger.append(f'Getting API details from JSON')
                 json_obj = self.get_json(obj["data"])
             if obj["type"] == "api_doc":
+                if self.logger:
+                    self.logger.append(f'Getting API details from API documentation')
                 json_obj = obj["data"]
             if "doc_website" in obj:
+                if self.logger:
+                    self.logger.append(f"Starting document extract autogen for {obj['doc_website']}")
                 information = ""
                 if json_obj:
                     information = f"""
@@ -53,16 +65,26 @@ class APIFormatter:
                 result = None
 
                 while runs < AUTOGEN_RERUN_LIMIT:
+                    if self.logger:
+                        self.logger.append(f"Starting autogen extract run {runs}")
+                    sleep(1)
                     print()
                     print(f"----- STARTING AUTOGEN EXTRACT RUN {runs} -----")
                     print()
-                    result = extract(information)
+                    result = extract(information, self.logger)
                     if result != AUTOGEN_RERUN_CONDITION:
+                        if self.logger:
+                            self.logger.append(f"Autogen extract run {runs} successful")
                         break
+                    else:
+                        if self.logger:
+                            self.logger.append(f"Autogen extract run {runs} failed")
 
                     runs += 1
                 json_obj = result
             apis.append(json_obj)
+        if self.logger:
+            self.logger.append(f"APIs formatted: {apis}")
         return apis
 
     def get_json_api(self, url):

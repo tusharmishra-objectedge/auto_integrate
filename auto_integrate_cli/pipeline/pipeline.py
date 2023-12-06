@@ -12,11 +12,12 @@ class Pipeline:
     Uses mapping to map data from api1 to api2 and generate pipeline.
     Applies appropriate transformations and conditions. GETs data from api1 and POSTs to api2.
     """
-    def __init__(self, api1, api2, mapping):
+    def __init__(self, api1, api2, mapping, logger=None):
         self.api1URL = api1
         self.api2URL = api2
         self.mapping = mapping
         self.mapped_data = None
+        self.logger = logger
 
     def map_data(self, num_of_records=None):
         """
@@ -33,9 +34,13 @@ class Pipeline:
         """
 
         dataAPI1 = self.get_data_from_api(num_of_records)
+        if self.logger:
+            self.logger.append(f'Got {len(dataAPI1)} records from {self.api1URL}')
 
         mapped_data = []
 
+        if self.logger:
+            self.logger.append(f'Mapping {len(dataAPI1)} records from {self.api1URL}')
         for datum in dataAPI1:
             mapped_datum = {}
             for targetKey in self.mapping.keys():
@@ -172,7 +177,8 @@ class Pipeline:
             fieldsToConcat = []
             for field in sourceFields:
                 fieldsToConcat.append(datum[field])
-            mapped_datum[targetKey] = PIPELINE_CONCAT_DEFAULT.join(fieldsToConcat)
+            transformedValue = PIPELINE_CONCAT_DEFAULT.join(fieldsToConcat)
+            return transformedValue
 
 
     def handleConditions(self, conditions, sourceField):
@@ -251,8 +257,12 @@ class Pipeline:
 
                 return data
             else:
+                if self.logger:
+                    self.logger.append(f'Error getting data from {self.api1URL}: {response.status_code}')
                 print(f'Error getting data from {self.api1URL}: {response.status_code}')
         except Exception as e:
+            if self.logger:
+                self.logger.append(f'Error getting data from {self.api1URL}: {e}')
             print(f'Error getting data from {self.api1URL}: {e}')
             return None
 
@@ -271,16 +281,24 @@ class Pipeline:
         Returns:
             int: Number of records processed
         """
+        if self.logger:
+            self.logger.append(f'Generating pipeline for {len(self.mapped_data)} records from \n{self.api1URL} \nto \n{self.api2URL}')
 
         for item in self.mapped_data:
             try:
                 response = requests.post(self.api2URL, json=item)
                 if response.status_code == 200 or response.status_code == 201:
+                    if self.logger:
+                        self.logger.append(f'POST OK: \n{item}')
                     print(f'POST to {self.api2URL}: OK')
                     # return len(item)
                 else:
+                    if self.logger:
+                        self.logger.append(f'POST ERROR {response.status_code} \n{self.api2URL} \n{item}')
                     print(f'POST to {self.api2URL}: ERROR {response.status_code}')
                     return 0
             except Exception as e:
+                if self.logger:
+                    self.logger.append(f'POST ERROR {e} \n{self.api2URL} \n{item}')
                 print(f'POST to {self.api2URL}: ERROR {e}')
                 return 0
