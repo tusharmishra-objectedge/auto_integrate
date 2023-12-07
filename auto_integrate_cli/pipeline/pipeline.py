@@ -6,15 +6,17 @@ from dateutil import parser
 
 from auto_integrate_cli.settings.default import PIPELINE_CONCAT_DEFAULT, PIPELINE_CONDITION_DEFAULT
 
+from auto_integrate_cli.file_handler.json_handler import JSONHandler
+
 class Pipeline:
     """
     Pipeline
     Uses mapping to map data from api1 to api2 and generate pipeline.
     Applies appropriate transformations and conditions. GETs data from api1 and POSTs to api2.
     """
-    def __init__(self, api1, api2, mapping, logger=None):
-        self.api1URL = api1
-        self.api2URL = api2
+    def __init__(self, api1URL, api2URL, mapping, logger=None):
+        self.api1URL = api1URL
+        self.api2URL = api2URL
         self.mapping = mapping
         self.mapped_data = None
         self.logger = logger
@@ -45,17 +47,22 @@ class Pipeline:
             mapped_datum = {}
             for targetKey in self.mapping.keys():
                 sourceFields = self.mapping[targetKey]["source_fields"]
+                print(f'sourceFields: {sourceFields}')
 
 
                 # Check conditions, if applied, source fields will be conditionVal
                 if "conditions" in self.mapping[targetKey]:
                     conditions = self.mapping[targetKey]["conditions"]
                     if conditions:
-                        conditionVal = self.handleConditions(conditions, datum[sourceFields[0]])
+                        conditionVal = self.handleConditions(conditions, sourceFields)
                         if conditionVal != PIPELINE_CONDITION_DEFAULT:
-                            sourceFields = conditionVal
+                            sourceFields = [conditionVal]
+
+                print(f'sourceFields after Conditions: {sourceFields}')
 
                 transformation = self.mapping[targetKey]["transformation"]
+
+                print(f'transformation: {transformation}')
 
                 if transformation == "toDateTime":
                     api1DateTimeFormat = self.mapping[targetKey]["api1DateFormat"]
@@ -63,6 +70,8 @@ class Pipeline:
                     transformedValue = self.applyTransformation(transformation, sourceFields, datum, api1DateTimeFormat, api2DateTimeFormat)
                 else:
                     transformedValue = self.applyTransformation(transformation, sourceFields, datum)
+
+                print(f'transformedValue: {transformedValue}')
 
                 mapped_datum[targetKey] = transformedValue
             mapped_data.append(mapped_datum)
@@ -88,22 +97,22 @@ class Pipeline:
         """
         if transformation == "none":
             # No transformation
-            transformedValue = datum[sourceFields[0]]
+            transformedValue = sourceFields[0]
             return transformedValue
 
         elif transformation == "toInt":
             # Convert to int
-            transformedValue = int(datum[sourceFields[0]])
+            transformedValue = int(sourceFields[0])
             return transformedValue
 
         elif transformation == "toFloat":
             # Convert to float
-            transformedValue = float(datum[sourceFields[0]])
+            transformedValue = float(sourceFields[0])
             return transformedValue
 
         elif transformation == "toString":
             # Convert to string
-            transformedValue = str(datum[sourceFields[0]])
+            transformedValue = str(sourceFields[0])
             return transformedValue
 
         elif transformation == "toDateTime":
@@ -115,7 +124,7 @@ class Pipeline:
             utc = False
 
             # Convert API1 date to datetime object
-            dateString = datum[sourceFields[0]]
+            dateString = sourceFields[0]
             # No conversion necessary if same date format
             if api1DateTimeFormat == api2DateTimeFormat:
                 return str(dateString)
@@ -152,23 +161,23 @@ class Pipeline:
 
         elif transformation == "toBool":
             # Convert to bool
-            transformedValue = bool(datum[sourceFields[0]])
+            transformedValue = bool(sourceFields[0])
             return transformedValue
 
         elif transformation == "toObject":
             # Convert to object
-            transformedValue = json.loads(datum[sourceFields[0]])
+            transformedValue = json.loads(sourceFields[0])
             return transformedValue
 
         elif transformation == "toList":
             # Convert to list
-            transformedValue = datum[sourceFields[0]].split(",")
+            transformedValue = sourceFields[0].split(",")
             return transformedValue
 
         elif transformation == "toSubstr":
             # Grab source field from datum and substring it
             # todo: check substring conditions
-            sourceField = datum[sourceFields[0]]
+            sourceField = sourceFields[0]
             transformedValue = sourceField[:]
             return transformedValue
 
@@ -211,25 +220,29 @@ class Pipeline:
             # todo: handle conditions for length mismatches
 
             if condition == "ifNull":
-                if sourceField == None or sourceField == "none":
+                if sourceField == None or sourceField == "none" or not sourceField:
                     returnVal = fallback
-            elif condition == "isEmpty":
-                if sourceField == None or sourceField == "none" or sourceField == "":
+            elif condition == "ifEmpty":
+                if sourceField == None or sourceField == "none" or sourceField == "" or not sourceField:
                     returnVal = fallback
-            elif condition == "ifWrongFormat":
-                returnVal = PIPELINE_CONDITION_DEFAULT
-            elif condition == "ifLengthLessThan":
-                returnVal = PIPELINE_CONDITION_DEFAULT
-            elif condition == "ifLengthGreaterThan":
-                returnVal = PIPELINE_CONDITION_DEFAULT
-            elif condition == "ifLengthEqualTo":
-                returnVal = PIPELINE_CONDITION_DEFAULT
-            elif condition == "ifLengthLessThanOrEqualTo":
-                returnVal = PIPELINE_CONDITION_DEFAULT
-            elif condition == "ifLengthGreaterThanOrEqualTo":
-                returnVal = PIPELINE_CONDITION_DEFAULT
+            # elif condition == "ifWrongFormat":
+            #     returnVal = PIPELINE_CONDITION_DEFAULT
+            # elif condition == "ifLengthLessThan":
+            #     returnVal = PIPELINE_CONDITION_DEFAULT
+            # elif condition == "ifLengthGreaterThan":
+            #     returnVal = PIPELINE_CONDITION_DEFAULT
+            # elif condition == "ifLengthEqualTo":
+            #     returnVal = PIPELINE_CONDITION_DEFAULT
+            # elif condition == "ifLengthLessThanOrEqualTo":
+            #     returnVal = PIPELINE_CONDITION_DEFAULT
+            # elif condition == "ifLengthGreaterThanOrEqualTo":
+            #     returnVal = PIPELINE_CONDITION_DEFAULT
             elif condition == "isPrimary":
-                primary = conditions["primary"]
+                try:
+                    primary = conditions["primary"]
+                except TypeError as e:
+                    primary = sourceField[0]
+
                 returnVal = primary
 
         return returnVal
@@ -302,3 +315,20 @@ class Pipeline:
                     self.logger.append(f'POST ERROR {e} \n{self.api2URL} \n{item}')
                 print(f'POST to {self.api2URL}: ERROR {e}')
                 return 0
+
+if __name__ == "__main__":
+    # mapping_path = '../../demo/pipelineTest.json'
+    mapping_path = '../../demo/mockOutput.json'
+
+    jsonHandler = JSONHandler(mapping_path)
+    dataSFURL = "https://651313e18e505cebc2e98c43.mockapi.io/DataSF"
+    HubSpotURL = "https://651313e18e505cebc2e98c43.mockapi.io/HubspotCompany"
+    studentsURL = "https://651313e18e505cebc2e98c43.mockapi.io/pupils"
+    pupilsURL = "https://651313e18e505cebc2e98c43.mockapi.io/students"
+
+    mapping = jsonHandler.read()
+    mapping = mapping["mapped"]
+
+    pipeline = Pipeline(studentsURL, pupilsURL, mapping)
+    pipeline.map_data(10)
+    pipeline.generate_pipeline()
