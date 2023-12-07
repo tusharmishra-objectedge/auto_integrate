@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 from dateutil import parser
 
-from auto_integrate_cli.settings.default import PIPELINE_CONCAT_DEFAULT, PIPELINE_CONDITION_DEFAULT
+from auto_integrate_cli.settings.default import PIPELINE_CONCAT_DEFAULT, PIPELINE_CONDITION_DEFAULT, PIPELINE_NUMBER
 
 from auto_integrate_cli.file_handler.json_handler import JSONHandler
 
@@ -330,5 +330,5 @@ if __name__ == "__main__":
     mapping = mapping["mapped"]
 
     pipeline = Pipeline(studentsURL, pupilsURL, mapping)
-    pipeline.map_data(10)
+    pipeline.map_data(PIPELINE_NUMBER)
     pipeline.generate_pipeline()

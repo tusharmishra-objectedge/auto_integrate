@@ -9,6 +9,7 @@ from auto_integrate_cli.file_handler.log_handler import LogHandler
 from auto_integrate_cli.api_formatter.base import APIFormatter
 
 from auto_integrate_cli.text_user_interface.tui_inquirer import TUIInquirer
+from auto_integrate_cli.text_user_interface.textual_ui import VerificationApp
 
 # Mappers
 from auto_integrate_cli.mapper.mappings import mappings, map_autogen
@@ -127,27 +128,40 @@ def main():
         print(f"{field}: {coverageDict[field]}")
     print()
 
-    tui = TUIInquirer(mapping, api1Fields, api2Fields, logger)
-    answers = tui.promptUser()
+    logger.append(f"Coverage Details: {coverageDict}")
+    logger.append(f"Coverage: {coverage}")
 
-    correct = 0
-    total = len(answers)
-    for value in answers.values():
-        if value[0] == "correct":
-            correct += 1
+    if coverage > COVERAGE_THRESHOLD:
 
-    print(f"\nYou verified {correct} out of {total} mappings as correct!\n")
-    logger.append(str(answers))
-    logger.append(f"Verified {correct} out of {total} mappings as correct!")
+        logger.append(f"Coverage is greater than {COVERAGE_THRESHOLD}. Prompting User for verification...")
 
-    if correct == total:
-        print("Generating Pipeline...")
-        pipeline = Pipeline(api1URL, api2URL, mapping, logger)
-        mapped_data = pipeline.map_data(10)
+        # tui = TUIInquirer(mapping, api1Fields, api2Fields, logger)
+        # answers = tui.promptUser()
 
-        pipeline.generate_pipeline()
-    else:
-        print("Please verify all mappings as correct to generate pipeline.")
+        verifyApp = VerificationApp(mapping)
+        answers = verifyApp.run()
+
+        correct = 0
+        total = len(answers)
+
+        print(f'Answers: {answers}')
+        for value in answers.values():
+            if value == True:
+                correct += 1
+
+        print(f"\nYou verified {correct} out of {total} mappings as correct!\n")
+        logger.append(str(answers))
+        logger.append(f"Verified {correct} out of {total} mappings as correct!")
+
+        if correct == total:
+            logger.append(f"All mappings verified as correct!")
+            print("Generating Pipeline...")
+            pipeline = Pipeline(api1URL, api2URL, mapping, logger)
+            mapped_data = pipeline.map_data(10)
+
+            pipeline.generate_pipeline()
+        else:
+            print("Please verify all mappings as correct to generate pipeline.")
 
 
 if __name__ == "__main__":

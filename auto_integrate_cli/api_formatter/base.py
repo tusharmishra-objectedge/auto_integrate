@@ -119,7 +119,11 @@ class APIFormatter:
                 apiDetailsDict[apiKey] = json_obj
 
         if self.logger:
-            self.logger.append(f"APIs formatted: {apiDetailsDict}")
+            self.logger.append(f"APIs formatted")
+            self.logger.append(f"API1: {apiDetailsDict['api1']}")
+            self.logger.append(f"API1 Fields: {apiDetailsDict['api1Fields']}")
+            self.logger.append(f"API2: {apiDetailsDict['api2']}")
+            self.logger.append(f"API2 Fields: {apiDetailsDict['api2Fields']}")
         return apiDetailsDict
 
     def get_json_api(self, url):
