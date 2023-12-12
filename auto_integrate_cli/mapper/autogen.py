@@ -143,15 +143,7 @@ using the key "fallback". Some key conditions are:
 2. "ifEmpty": If the value is empty.
 3. "ifWrongFormat": If the value is in the wrong format and cannot be
     transformed then use the key "fallback" to specify the value to be used.
-4. "ifLengthLessThan": If the length of the value is less than a given value.
-5. "ifLengthGreaterThan": If the length of the value is greater than a given
-    value.
-6. "ifLengthEqualTo": If the length of the value is equal to a given value.
-7. "ifLengthLessThanOrEqualTo": If the length of the value is less than or
-    equal to a given value.
-8. "ifLengthGreaterThanOrEqualTo": If the length of the value is greater than
-    or equal to a given value.
-9. "isPrimary": If there are multiple fields in API 1 that map to the same
+4. "isPrimary": If there are multiple fields in API 1 that map to the same
     field in API 2, you should use this condition to specify the primary
     field.""",
         )
@@ -207,20 +199,12 @@ These are the possible transformations to be performed on the source fields:
 
 If the transformation has specific values based on conditions, you should
 highlight them using the key "conditions" and the value for the transformation
-using the key "fallback". Some key conditions are:
+using the key "fallback". If conditions are present, they must be defined as shown in the example. The fallback value must be a valid field from API1 or null. Some key conditions are:
 1. "ifNull": If the value is null.
 2. "ifEmpty": If the value is empty.
 3. "ifWrongFormat": If the value is in the wrong format and cannot be
     transformed then use the key "fallback" to specify the value to be used.
-4. "ifLengthLessThan": If the length of the value is less than a given value.
-5. "ifLengthGreaterThan": If the length of the value is greater than a
-    given value.
-6. "ifLengthEqualTo": If the length of the value is equal to a given value.
-7. "ifLengthLessThanOrEqualTo": If the length of the value is less than or
-    equal to a given value.
-8. "ifLengthGreaterThanOrEqualTo": If the length of the value is greater than
-    or equal to a given value.
-9. "isPrimary": If there are multiple fields in API 1 that map to the same
+4. "isPrimary": If there are multiple fields in API 1 that map to the same
     field in API 2, you should use this condition to specify the primary
     field.
 

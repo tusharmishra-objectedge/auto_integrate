@@ -46,9 +46,12 @@ class Pipeline:
         for datum in dataAPI1:
             mapped_datum = {}
             for targetKey in self.mapping.keys():
-                sourceFields = self.mapping[targetKey]["source_fields"]
-                print(f'sourceFields: {sourceFields}')
-
+                # print(f'targetKey: {targetKey}')
+                try:
+                    sourceFields = self.mapping[targetKey]["source_fields"]
+                except KeyError as e:
+                    sourceFields = []
+                # print(f'sourceFields: {sourceFields}')
 
                 # Check conditions, if applied, source fields will be conditionVal
                 if "conditions" in self.mapping[targetKey]:
@@ -58,11 +61,11 @@ class Pipeline:
                         if conditionVal != PIPELINE_CONDITION_DEFAULT:
                             sourceFields = [conditionVal]
 
-                print(f'sourceFields after Conditions: {sourceFields}')
+                # print(f'sourceFields after Conditions: {sourceFields}')
 
                 transformation = self.mapping[targetKey]["transformation"]
 
-                print(f'transformation: {transformation}')
+                # print(f'transformation: {transformation}')
 
                 if transformation == "toDateTime":
                     api1DateTimeFormat = self.mapping[targetKey]["api1DateFormat"]
@@ -71,7 +74,7 @@ class Pipeline:
                 else:
                     transformedValue = self.applyTransformation(transformation, sourceFields, datum)
 
-                print(f'transformedValue: {transformedValue}')
+                # print(f'transformedValue: {transformedValue}')
 
                 mapped_datum[targetKey] = transformedValue
             mapped_data.append(mapped_datum)
@@ -190,7 +193,7 @@ class Pipeline:
             return transformedValue
 
 
-    def handleConditions(self, conditions, sourceField):
+    def handleConditions(self, conditions, sourceFields):
         """
         handleConditions
 
@@ -200,7 +203,7 @@ class Pipeline:
 
         Parameters:
             conditions (list): The conditions
-            sourceField (any): The source field
+            sourceFields (any): The source field
 
         Returns:
             any: The appropriate value or PIPELINE_CONDITION_DEFAULT
@@ -220,10 +223,10 @@ class Pipeline:
             # todo: handle conditions for length mismatches
 
             if condition == "ifNull":
-                if sourceField == None or sourceField == "none" or not sourceField:
+                if sourceFields == None or sourceFields == "none" or not sourceFields:
                     returnVal = fallback
             elif condition == "ifEmpty":
-                if sourceField == None or sourceField == "none" or sourceField == "" or not sourceField:
+                if sourceFields == None or sourceFields == "none" or sourceFields == "" or not sourceFields:
                     returnVal = fallback
             # elif condition == "ifWrongFormat":
             #     returnVal = PIPELINE_CONDITION_DEFAULT
@@ -239,9 +242,9 @@ class Pipeline:
             #     returnVal = PIPELINE_CONDITION_DEFAULT
             elif condition == "isPrimary":
                 try:
-                    primary = conditions["primary"]
+                    primary = fallback
                 except TypeError as e:
-                    primary = sourceField[0]
+                    primary = sourceFields[0]
 
                 returnVal = primary
 
@@ -318,7 +321,7 @@ class Pipeline:
 
 if __name__ == "__main__":
     # mapping_path = '../../demo/pipelineTest.json'
-    mapping_path = '../../demo/mockOutput.json'
+    mapping_path = '../../demo/mappingTestDH.json'
 
     jsonHandler = JSONHandler(mapping_path)
     dataSFURL = "https://651313e18e505cebc2e98c43.mockapi.io/DataSF"
@@ -329,6 +332,7 @@ if __name__ == "__main__":
     mapping = jsonHandler.read()
     mapping = mapping["mapped"]
 
-    pipeline = Pipeline(studentsURL, pupilsURL, mapping)
+    pipeline = Pipeline(dataSFURL, HubSpotURL, mapping)
     pipeline.map_data(PIPELINE_NUMBER)
-    pipeline.generate_pipeline()
+    print(pipeline.mapped_data)
+    # pipeline.generate_pipeline()

@@ -78,6 +78,7 @@ def main():
     logger = LogHandler("logs/logs.txt")
     logger.createLogFile()
 
+    # Read Inputs
     print(f"\nReading input file at path: {input_file} ...\n")
     file_handler = JSONHandler(input_file, output_file, logger)
     inputs = file_handler.read()
@@ -90,6 +91,7 @@ def main():
     api1URL = inputs["api1"]["url"]
     api2URL = inputs["api2"]["url"]
 
+    # Format APIs
     api_formatter = APIFormatter(inputs, logger)
 
     apiDetailsDict = api_formatter.format()
@@ -106,12 +108,14 @@ def main():
 
     file_handler.output_file = output_file
 
+    # Mapping
     output_obj = map_autogen(api1, api2, logger)
     print(f"\nWriting output file at path: {output_file} ...\n")
     file_handler.write(output_obj)
 
     mapping = output_obj["mapped"]
 
+    # Coverage Stats
     api2FieldCount = len(api2Fields)
     coverageDict = {field: False for field in api2Fields}
 
@@ -132,11 +136,8 @@ def main():
     logger.append(f"Coverage: {coverage}")
 
     if coverage > COVERAGE_THRESHOLD:
-
+        # Verify with user
         logger.append(f"Coverage is greater than {COVERAGE_THRESHOLD}. Prompting User for verification...")
-
-        # tui = TUIInquirer(mapping, api1Fields, api2Fields, logger)
-        # answers = tui.promptUser()
 
         verifyApp = VerificationApp(mapping)
         answers = verifyApp.run()
@@ -144,7 +145,7 @@ def main():
         correct = 0
         total = len(answers)
 
-        print(f'Answers: {answers}')
+        # print(f'Answers: {answers}')
         for value in answers.values():
             if value == True:
                 correct += 1
@@ -153,6 +154,10 @@ def main():
         logger.append(str(answers))
         logger.append(f"Verified {correct} out of {total} mappings as correct!")
 
+        pipeline = Pipeline(api1URL, api2URL, mapping, logger)
+        mapped_data = pipeline.map_data(10)
+
+        # Generate Pipeline
         if correct == total:
             logger.append(f"All mappings verified as correct!")
             print("Generating Pipeline...")
