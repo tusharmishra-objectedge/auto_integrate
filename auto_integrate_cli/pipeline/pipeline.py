@@ -100,22 +100,22 @@ class Pipeline:
         """
         if transformation == "none":
             # No transformation
-            transformedValue = sourceFields[0]
+            transformedValue = datum[sourceFields[0]]
             return transformedValue
 
         elif transformation == "toInt":
             # Convert to int
-            transformedValue = int(sourceFields[0])
+            transformedValue = int(datum[sourceFields[0]])
             return transformedValue
 
         elif transformation == "toFloat":
             # Convert to float
-            transformedValue = float(sourceFields[0])
+            transformedValue = float(datum[sourceFields[0]])
             return transformedValue
 
         elif transformation == "toString":
             # Convert to string
-            transformedValue = str(sourceFields[0])
+            transformedValue = str(datum[sourceFields[0]])
             return transformedValue
 
         elif transformation == "toDateTime":
@@ -127,7 +127,7 @@ class Pipeline:
             utc = False
 
             # Convert API1 date to datetime object
-            dateString = sourceFields[0]
+            dateString = datum[sourceFields[0]]
             # No conversion necessary if same date format
             if api1DateTimeFormat == api2DateTimeFormat:
                 return str(dateString)
@@ -164,24 +164,24 @@ class Pipeline:
 
         elif transformation == "toBool":
             # Convert to bool
-            transformedValue = bool(sourceFields[0])
+            transformedValue = bool(datum[sourceFields[0]])
             return transformedValue
 
         elif transformation == "toObject":
             # Convert to object
-            transformedValue = json.loads(sourceFields[0])
+            transformedValue = json.loads(datum[sourceFields[0]])
             return transformedValue
 
         elif transformation == "toList":
             # Convert to list
-            transformedValue = sourceFields[0].split(",")
+            transformedValue = [elem.strip() for elem in datum[sourceFields[0]].split(",")]
             return transformedValue
 
         elif transformation == "toSubstr":
             # Grab source field from datum and substring it
             # todo: check substring conditions
             sourceField = sourceFields[0]
-            transformedValue = sourceField[:]
+            transformedValue = datum[sourceField[:]]
             return transformedValue
 
         elif transformation == "toConcat":
@@ -321,7 +321,7 @@ class Pipeline:
 
 if __name__ == "__main__":
     # mapping_path = '../../demo/pipelineTest.json'
-    mapping_path = '../../demo/mappingTestDH.json'
+    mapping_path = '../../demo/mappingTestMock.json'
 
     jsonHandler = JSONHandler(mapping_path)
     dataSFURL = "https://651313e18e505cebc2e98c43.mockapi.io/DataSF"
@@ -332,7 +332,7 @@ if __name__ == "__main__":
     mapping = jsonHandler.read()
     mapping = mapping["mapped"]
 
-    pipeline = Pipeline(dataSFURL, HubSpotURL, mapping)
+    pipeline = Pipeline(studentsURL, pupilsURL, mapping)
     pipeline.map_data(PIPELINE_NUMBER)
     print(pipeline.mapped_data)
     # pipeline.generate_pipeline()
