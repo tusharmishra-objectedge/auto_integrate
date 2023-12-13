@@ -134,49 +134,49 @@ if __name__ == "__main__":
     # print(api1)
     # print(api2)
 
-    # Add fields to a set for each api
-    api1Mapped = set(x for x in api1.keys())
-    api2Mapped = set(x for x in api2.keys())
-
-    api1Unmapped = set()
-    api2Unmapped = set()
-
-    # From the output, remove the mapped fields from the set, to check against mapped and unmaped
-    for a1, a2 in data['mappedFields'].items():
-        api1Mapped.remove(a1)
-        api2Mapped.remove(a2)
-
-    # Add the unmapped fields to the set
-    for field in data['unmappedFields']:
-        api1Unmapped.add(field)
-
-    # Add the unmapped fields to the set
-    for field in api2Mapped:
-        api2Unmapped.add(field)
-
-    print(f'api1unmapped: {api1Unmapped}')
-    print(f'api2unmapped: {api2Unmapped}')
-
-    userMapped = {
-        "tt1": "typeTest1",
-        "tt2": "typeTest2",
-        "tt3": "typeTest3",
-        "id": "id",
-        "created": "createdAt"
-    }
-
-    for key, val in userMapped.items():
-        keyTyep = api1[key]
-        valType = api2[val]
-
-        if checkConversion(keyTyep, valType):
-            print(f'{key}: {api1[key]} can be converted to {val}: {api2[val]}')
-            convert = convertType(key, api1[key], api2[val])
-            print(f'Converted value: {convert}')
-            print(f'After conversion types: {convert.__class__.__name__} and {api2[val]}')
-        else:
-            print(f'{key}: {api1[key]} cannot be converted to {val}: {api2[val]}')
-
-        print()
-
-    print(transformations)
+    # # Add fields to a set for each api
+    # api1Mapped = set(x for x in api1.keys())
+    # api2Mapped = set(x for x in api2.keys())
+    #
+    # api1Unmapped = set()
+    # api2Unmapped = set()
+    #
+    # # From the output, remove the mapped fields from the set, to check against mapped and unmaped
+    # for a1, a2 in data['mappedFields'].items():
+    #     api1Mapped.remove(a1)
+    #     api2Mapped.remove(a2)
+    #
+    # # Add the unmapped fields to the set
+    # for field in data['unmappedFields']:
+    #     api1Unmapped.add(field)
+    #
+    # # Add the unmapped fields to the set
+    # for field in api2Mapped:
+    #     api2Unmapped.add(field)
+    #
+    # print(f'api1unmapped: {api1Unmapped}')
+    # print(f'api2unmapped: {api2Unmapped}')
+    #
+    # userMapped = {
+    #     "tt1": "typeTest1",
+    #     "tt2": "typeTest2",
+    #     "tt3": "typeTest3",
+    #     "id": "id",
+    #     "created": "createdAt"
+    # }
+    #
+    # for key, val in userMapped.items():
+    #     keyTyep = api1[key]
+    #     valType = api2[val]
+    #
+    #     if checkConversion(keyTyep, valType):
+    #         print(f'{key}: {api1[key]} can be converted to {val}: {api2[val]}')
+    #         convert = convertType(key, api1[key], api2[val])
+    #         print(f'Converted value: {convert}')
+    #         print(f'After conversion types: {convert.__class__.__name__} and {api2[val]}')
+    #     else:
+    #         print(f'{key}: {api1[key]} cannot be converted to {val}: {api2[val]}')
+    #
+    #     print()
+    #
+    # print(transformations)

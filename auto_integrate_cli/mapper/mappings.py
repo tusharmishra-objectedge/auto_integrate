@@ -75,7 +75,7 @@ def map_autogen(api1, api2, logger=None):
     returns None. Otherwise, it returns the result of the mapping.
     """
     if logger:
-        logger.append(f"Starting autogen mapper")
+        logger.append("Starting autogen mapper")
     autogen_mapper = AutogenMapper(api1, api2, logger)
     runs = 0
     result = None

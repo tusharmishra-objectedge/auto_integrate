@@ -26,29 +26,65 @@ class APIFormatter:
 
     def format(self):
         if self.logger:
-            self.logger.append(f"Formatting APIs: {self.input_obj['api1']}\n{self.input_obj['api2']}")
+            self.logger.append(
+                f"Formatting APIs: {self.input_obj['api1']}\n{self.input_obj['api2']}"
+            )
         api1_details = self.input_obj["api1"]
         api2_details = self.input_obj["api2"]
 
-        apis = []
+        apiDetails = [api1_details, api2_details]
+        apiDetailsDict = {}
 
-        for obj in api1_details, api2_details:
+        for i, apiDetail in enumerate(apiDetails):
+            fieldKey = f"api{i + 1}Fields"
+            apiKey = f"api{i + 1}"
+
+            if apiKey not in apiDetailsDict:
+                apiDetailsDict[apiKey] = {}
+
+            if fieldKey not in apiDetailsDict:
+                apiDetailsDict[fieldKey] = {}
+
+            inputType = apiDetail["type"]
             json_obj = {}
-            if obj["type"] == "json_api":
+
+            if inputType == "json_api":
                 if self.logger:
-                    self.logger.append(f'Getting API details from URL')
-                json_obj = self.get_json_api(obj["url"])
-            if obj["type"] == "json_dict":
+                    self.logger.append("Getting API details from URL")
+                json_obj = self.get_json_api(apiDetail["url"])
+                apiDetailsDict[apiKey] = json_obj
+                apiDetailsDict[fieldKey] = json_obj
+
+            elif inputType == "json_dict":
                 if self.logger:
-                    self.logger.append(f'Getting API details from JSON')
-                json_obj = self.get_json(obj["data"])
-            if obj["type"] == "api_doc":
+                    self.logger.append("Getting API details from JSON")
+                json_obj = self.get_json(apiDetail["data"])
+                apiDetailsDict[apiKey] = json_obj
+                apiDetailsDict[fieldKey] = json_obj
+
+            elif inputType == "api_doc":
                 if self.logger:
-                    self.logger.append(f'Getting API details from API documentation')
-                json_obj = obj["data"]
-            if "doc_website" in obj:
+                    self.logger.append(
+                        "Getting API details from API documentation"
+                    )
+                json_obj = apiDetail["data"]
+                apiDetailsDict[apiKey] = json_obj
+                for key, value in apiDetail["data"][0].items():
+                    field = key
+                    fieldType = value["type"]
+                    sampleVal = value["sample_value"]
+                    if field not in apiDetailsDict[fieldKey].keys():
+                        apiDetailsDict[fieldKey][field] = {}
+                    apiDetailsDict[fieldKey][field] = {
+                        "type": fieldType,
+                        "sample_value": sampleVal,
+                    }
+
+            if "doc_website" in apiDetail.keys():
                 if self.logger:
-                    self.logger.append(f"Starting document extract autogen for {obj['doc_website']}")
+                    self.logger.append(
+                        f"Starting document extract autogen for {apiDetail['doc_website']}"
+                    )
                 information = ""
                 if json_obj:
                     information = f"""
@@ -57,8 +93,7 @@ class APIFormatter:
                     """
 
                 information += f"""\nThis is the API documentation website:
-                {obj["doc_website"]}. \n Now you need to extract information
-                and structure the API.
+                {apiDetail["doc_website"]}. \nNow you need to extract information and structure the API.
                 """
                 # json_obj = extract(information)
                 runs = 0
@@ -66,7 +101,9 @@ class APIFormatter:
 
                 while runs < AUTOGEN_RERUN_LIMIT:
                     if self.logger:
-                        self.logger.append(f"Starting autogen extract run {runs}")
+                        self.logger.append(
+                            f"Starting autogen extract run {runs}"
+                        )
                     sleep(1)
                     print()
                     print(f"----- STARTING AUTOGEN EXTRACT RUN {runs} -----")
@@ -74,18 +111,30 @@ class APIFormatter:
                     result = extract(information, self.logger)
                     if result != AUTOGEN_RERUN_CONDITION:
                         if self.logger:
-                            self.logger.append(f"Autogen extract run {runs} successful")
+                            self.logger.append(
+                                f"Autogen extract run {runs} successful"
+                            )
                         break
                     else:
                         if self.logger:
-                            self.logger.append(f"Autogen extract run {runs} failed")
+                            self.logger.append(
+                                f"Autogen extract run {runs} failed"
+                            )
 
                     runs += 1
                 json_obj = result
-            apis.append(json_obj)
+                apiKey = f"api{i + 1}"
+                if apiKey not in apiDetailsDict:
+                    apiDetailsDict[apiKey] = {}
+                apiDetailsDict[apiKey] = json_obj
+
         if self.logger:
-            self.logger.append(f"APIs formatted: {apis}")
-        return apis
+            self.logger.append("APIs formatted")
+            self.logger.append(f"API1: {apiDetailsDict['api1']}")
+            self.logger.append(f"API1 Fields: {apiDetailsDict['api1Fields']}")
+            self.logger.append(f"API2: {apiDetailsDict['api2']}")
+            self.logger.append(f"API2 Fields: {apiDetailsDict['api2Fields']}")
+        return apiDetailsDict
 
     def get_json_api(self, url):
         """

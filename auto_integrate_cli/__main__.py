@@ -1,15 +1,16 @@
 import argparse
 import os
-import requests
 
-from auto_integrate_cli.settings.default import DEFAULT_CWD
+from auto_integrate_cli.settings.default import DEFAULT_CWD, COVERAGE_THRESHOLD
 
 from auto_integrate_cli.file_handler.json_handler import JSONHandler
 from auto_integrate_cli.file_handler.log_handler import LogHandler
 from auto_integrate_cli.api_formatter.base import APIFormatter
 
+from auto_integrate_cli.text_user_interface.textual_ui import VerificationApp
+
 # Mappers
-from auto_integrate_cli.mapper.mappings import mappings, map_autogen
+from auto_integrate_cli.mapper.mappings import map_autogen
 
 # Pipeline
 from auto_integrate_cli.pipeline.pipeline import Pipeline
@@ -75,6 +76,7 @@ def main():
     logger = LogHandler("logs/logs.txt")
     logger.createLogFile()
 
+    # Read Inputs
     print(f"\nReading input file at path: {input_file} ...\n")
     file_handler = JSONHandler(input_file, output_file, logger)
     inputs = file_handler.read()
@@ -83,33 +85,102 @@ def main():
         print("API1 or API2 is empty. Exiting...")
         return
 
-
     api1URL = inputs["api1"]["url"]
     api2URL = inputs["api2"]["url"]
 
+    # Format APIs
     api_formatter = APIFormatter(inputs, logger)
 
-    api1, api2 = api_formatter.format()
+    apiDetailsDict = api_formatter.format()
+    api1 = apiDetailsDict["api1"]
+    api1Fields = apiDetailsDict["api1Fields"]
+    api2 = apiDetailsDict["api2"]
+    api2Fields = apiDetailsDict["api2Fields"]
 
-    documentScraperOutput = {"api1": api1, "api2": api2}
+    documentScraperOutput = {
+        "api1": api1,
+        "api1Fields": api1Fields,
+        "api2": api2,
+        "api2Fields": api2Fields,
+    }
 
-    file_handler.output_file = "documentScraperOutput.json"
+    documentScraperFilePath = (
+        "demo/extractOutput/"
+        + input_file.split("/")[-1].split(".")[0]
+        + "ExtractOutput.json"
+    )
+
+    file_handler.output_file = documentScraperFilePath
     file_handler.write(documentScraperOutput)
-    print('Wrote document scraper output to documentScraperOutput.json')
+    print(f"Wrote document scraper output to {documentScraperFilePath}")
 
     file_handler.output_file = output_file
 
+    # Mapping
     output_obj = map_autogen(api1, api2, logger)
     print(f"\nWriting output file at path: {output_file} ...\n")
     file_handler.write(output_obj)
 
     mapping = output_obj["mapped"]
 
-    pipeline = Pipeline(api1URL, api2URL, mapping, logger)
-    mapped_data = pipeline.map_data(10)
-    for datum in mapped_data:
-        print(datum)
-    pipeline.generate_pipeline()
+    # Coverage Stats
+    api2FieldCount = len(api2Fields)
+    coverageDict = {field: False for field in api2Fields}
+
+    coverage = 0
+    for field in mapping:
+        if field in api2Fields:
+            coverageDict[field] = True
+            coverage += 1
+
+    coverage = coverage / api2FieldCount
+    print()
+    print(f"Coverage: {coverage}")
+    for field in coverageDict:
+        print(f"{field}: {coverageDict[field]}")
+    print()
+
+    logger.append(f"Coverage Details: {coverageDict}")
+    logger.append(f"Coverage: {coverage}")
+
+    if coverage > COVERAGE_THRESHOLD:
+        # Verify with user
+        logger.append(
+            f"Coverage is greater than {COVERAGE_THRESHOLD}. Prompting User for verification..."
+        )
+
+        verifyApp = VerificationApp(mapping)
+        answers = verifyApp.run()
+
+        correct = 0
+        total = len(answers)
+
+        for value in answers.values():
+            if value is True:
+                correct += 1
+
+        print(
+            f"\nYou verified {correct} out of {total} mappings as correct!\n"
+        )
+        logger.append(str(answers))
+        logger.append(
+            f"Verified {correct} out of {total} mappings as correct!"
+        )
+
+        pipeline = Pipeline(api1URL, api2URL, mapping, logger)
+
+        # Generate Pipeline
+        if correct == total:
+            logger.append("All mappings verified as correct!")
+            print("Generating Pipeline...")
+            pipeline = Pipeline(api1URL, api2URL, mapping, logger)
+            pipeline.map_data(10)
+
+            pipeline.generate_pipeline()
+        else:
+            print(
+                "Please verify all mappings as correct to generate pipeline."
+            )
 
 
 if __name__ == "__main__":

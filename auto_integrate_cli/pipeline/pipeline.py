@@ -1,10 +1,16 @@
-from auto_integrate_cli.api_formatter.base import APIFormatter
 import requests
 import json
 from datetime import datetime
 from dateutil import parser
 
-from auto_integrate_cli.settings.default import PIPELINE_CONCAT_DEFAULT, PIPELINE_CONDITION_DEFAULT
+from auto_integrate_cli.settings.default import (
+    PIPELINE_CONCAT_DEFAULT,
+    PIPELINE_CONDITION_DEFAULT,
+    PIPELINE_NUMBER,
+)
+
+from auto_integrate_cli.file_handler.json_handler import JSONHandler
+
 
 class Pipeline:
     """
@@ -12,9 +18,10 @@ class Pipeline:
     Uses mapping to map data from api1 to api2 and generate pipeline.
     Applies appropriate transformations and conditions. GETs data from api1 and POSTs to api2.
     """
-    def __init__(self, api1, api2, mapping, logger=None):
-        self.api1URL = api1
-        self.api2URL = api2
+
+    def __init__(self, api1URL, api2URL, mapping, logger=None):
+        self.api1URL = api1URL
+        self.api2URL = api2URL
         self.mapping = mapping
         self.mapped_data = None
         self.logger = logger
@@ -35,41 +42,68 @@ class Pipeline:
 
         dataAPI1 = self.get_data_from_api(num_of_records)
         if self.logger:
-            self.logger.append(f'Got {len(dataAPI1)} records from {self.api1URL}')
+            self.logger.append(
+                f"Got {len(dataAPI1)} records from {self.api1URL}"
+            )
 
         mapped_data = []
 
         if self.logger:
-            self.logger.append(f'Mapping {len(dataAPI1)} records from {self.api1URL}')
+            self.logger.append(
+                f"Mapping {len(dataAPI1)} records from {self.api1URL}"
+            )
         for datum in dataAPI1:
             mapped_datum = {}
             for targetKey in self.mapping.keys():
-                sourceFields = self.mapping[targetKey]["source_fields"]
-
+                try:
+                    sourceFields = self.mapping[targetKey]["source_fields"]
+                except KeyError:
+                    sourceFields = []
 
                 # Check conditions, if applied, source fields will be conditionVal
                 if "conditions" in self.mapping[targetKey]:
                     conditions = self.mapping[targetKey]["conditions"]
                     if conditions:
-                        conditionVal = self.handleConditions(conditions, datum[sourceFields[0]])
+                        conditionVal = self.handleConditions(
+                            conditions, sourceFields
+                        )
                         if conditionVal != PIPELINE_CONDITION_DEFAULT:
-                            sourceFields = conditionVal
+                            sourceFields = [conditionVal]
 
                 transformation = self.mapping[targetKey]["transformation"]
 
                 if transformation == "toDateTime":
-                    api1DateTimeFormat = self.mapping[targetKey]["api1DateFormat"]
-                    api2DateTimeFormat = self.mapping[targetKey]["api2DateFormat"]
-                    transformedValue = self.applyTransformation(transformation, sourceFields, datum, api1DateTimeFormat, api2DateTimeFormat)
+                    api1DateTimeFormat = self.mapping[targetKey][
+                        "api1DateFormat"
+                    ]
+                    api2DateTimeFormat = self.mapping[targetKey][
+                        "api2DateFormat"
+                    ]
+                    transformedValue = self.applyTransformation(
+                        transformation,
+                        sourceFields,
+                        datum,
+                        api1DateTimeFormat,
+                        api2DateTimeFormat,
+                    )
                 else:
-                    transformedValue = self.applyTransformation(transformation, sourceFields, datum)
+                    transformedValue = self.applyTransformation(
+                        transformation, sourceFields, datum
+                    )
 
                 mapped_datum[targetKey] = transformedValue
             mapped_data.append(mapped_datum)
         self.mapped_data = mapped_data
         return self.mapped_data
 
-    def applyTransformation(self, transformation, sourceFields, datum, api1DateTimeFormat=None, api2DateTimeFormat=None):
+    def applyTransformation(
+        self,
+        transformation,
+        sourceFields,
+        datum,
+        api1DateTimeFormat=None,
+        api2DateTimeFormat=None,
+    ):
         """
         applyTransformation
 
@@ -111,9 +145,6 @@ class Pipeline:
             sourceDateTimeFormat = api1DateTimeFormat
             targetDateTimeFormat = api2DateTimeFormat
 
-            isoFormat = False
-            utc = False
-
             # Convert API1 date to datetime object
             dateString = datum[sourceFields[0]]
             # No conversion necessary if same date format
@@ -122,30 +153,29 @@ class Pipeline:
 
             # Convert to datetime object
             try:
-                dateObject = datetime.strptime(dateString, sourceDateTimeFormat)
+                dateObject = datetime.strptime(
+                    dateString, sourceDateTimeFormat
+                )
             except ValueError as e:
-                print(f'Error converting date string to datetime object: {e}')
+                print(f"Error converting date string to datetime object: {e}")
                 try:
-                    if dateString[-1] == 'Z':
-                        isoFormat = True
-                        utc = True
-                        # print('Date String in UTC')
-                        dateObject = datetime.fromisoformat(dateString.replace('Z', '+00:00'))
+                    if dateString[-1] == "Z":
+                        dateObject = datetime.fromisoformat(
+                            dateString.replace("Z", "+00:00")
+                        )
                     else:
-                        isoFormat = True
-                        # print('Date String not in UTC')
                         dateObject = datetime.fromisoformat(dateString)
-                    # print(f'ISO convert: {dateObject}')
                 except ValueError as e:
-                    print(f'Error converting as ISO: {dateString}, using dateutil parser')
+                    print(
+                        f"Error {e} converting as ISO: {dateString}, using dateutil parser"
+                    )
                     dateObject = parser.isoparse(dateString)
 
-            # print(dateObject)
             try:
                 convertedDateObject = dateObject.strftime(targetDateTimeFormat)
                 # print('Success converting datetime object to target format')
             except Exception as e:
-                print(f'Error converting datetime object to string: {e}')
+                print(f"Error converting datetime object to string: {e}")
                 convertedDateObject = str(dateObject)
             transformedValue = str(convertedDateObject)
             return transformedValue
@@ -162,14 +192,16 @@ class Pipeline:
 
         elif transformation == "toList":
             # Convert to list
-            transformedValue = datum[sourceFields[0]].split(",")
+            transformedValue = [
+                elem.strip() for elem in datum[sourceFields[0]].split(",")
+            ]
             return transformedValue
 
         elif transformation == "toSubstr":
             # Grab source field from datum and substring it
             # todo: check substring conditions
-            sourceField = datum[sourceFields[0]]
-            transformedValue = sourceField[:]
+            sourceField = sourceFields[0]
+            transformedValue = datum[sourceField[:]]
             return transformedValue
 
         elif transformation == "toConcat":
@@ -180,8 +212,7 @@ class Pipeline:
             transformedValue = PIPELINE_CONCAT_DEFAULT.join(fieldsToConcat)
             return transformedValue
 
-
-    def handleConditions(self, conditions, sourceField):
+    def handleConditions(self, conditions, sourceFields):
         """
         handleConditions
 
@@ -191,12 +222,11 @@ class Pipeline:
 
         Parameters:
             conditions (list): The conditions
-            sourceField (any): The source field
+            sourceFields (any): The source field
 
         Returns:
             any: The appropriate value or PIPELINE_CONDITION_DEFAULT
         """
-
 
         # Initialize returnVal to default
         # If a condition applies, returnVal will be changed appropriately, else default will be returned
@@ -204,32 +234,32 @@ class Pipeline:
         returnVal = PIPELINE_CONDITION_DEFAULT
 
         for cond in conditions:
-
             condition = cond["condition"]
             fallback = cond["fallback"]
 
-            # todo: handle conditions for length mismatches
-
             if condition == "ifNull":
-                if sourceField == None or sourceField == "none":
+                if (
+                    sourceFields is None
+                    or sourceFields == "none"
+                    or not sourceFields
+                ):
                     returnVal = fallback
-            elif condition == "isEmpty":
-                if sourceField == None or sourceField == "none" or sourceField == "":
+            elif condition == "ifEmpty":
+                if (
+                    sourceFields is None
+                    or sourceFields == "none"
+                    or sourceFields == ""
+                    or not sourceFields
+                ):
                     returnVal = fallback
             elif condition == "ifWrongFormat":
                 returnVal = PIPELINE_CONDITION_DEFAULT
-            elif condition == "ifLengthLessThan":
-                returnVal = PIPELINE_CONDITION_DEFAULT
-            elif condition == "ifLengthGreaterThan":
-                returnVal = PIPELINE_CONDITION_DEFAULT
-            elif condition == "ifLengthEqualTo":
-                returnVal = PIPELINE_CONDITION_DEFAULT
-            elif condition == "ifLengthLessThanOrEqualTo":
-                returnVal = PIPELINE_CONDITION_DEFAULT
-            elif condition == "ifLengthGreaterThanOrEqualTo":
-                returnVal = PIPELINE_CONDITION_DEFAULT
             elif condition == "isPrimary":
-                primary = conditions["primary"]
+                try:
+                    primary = fallback
+                except TypeError:
+                    primary = sourceFields[0]
+
                 returnVal = primary
 
         return returnVal
@@ -258,14 +288,19 @@ class Pipeline:
                 return data
             else:
                 if self.logger:
-                    self.logger.append(f'Error getting data from {self.api1URL}: {response.status_code}')
-                print(f'Error getting data from {self.api1URL}: {response.status_code}')
+                    self.logger.append(
+                        f"Error getting data from {self.api1URL}: {response.status_code}"
+                    )
+                print(
+                    f"Error getting data from {self.api1URL}: {response.status_code}"
+                )
         except Exception as e:
             if self.logger:
-                self.logger.append(f'Error getting data from {self.api1URL}: {e}')
-            print(f'Error getting data from {self.api1URL}: {e}')
+                self.logger.append(
+                    f"Error getting data from {self.api1URL}: {e}"
+                )
+            print(f"Error getting data from {self.api1URL}: {e}")
             return None
-
 
     def generate_pipeline(self):
         """
@@ -282,23 +317,49 @@ class Pipeline:
             int: Number of records processed
         """
         if self.logger:
-            self.logger.append(f'Generating pipeline for {len(self.mapped_data)} records from \n{self.api1URL} \nto \n{self.api2URL}')
+            self.logger.append(
+                f"Generating pipeline for {len(self.mapped_data)} records from \n{self.api1URL} \nto \n{self.api2URL}"
+            )
 
         for item in self.mapped_data:
             try:
                 response = requests.post(self.api2URL, json=item)
                 if response.status_code == 200 or response.status_code == 201:
                     if self.logger:
-                        self.logger.append(f'POST OK: \n{item}')
-                    print(f'POST to {self.api2URL}: OK')
-                    # return len(item)
+                        self.logger.append(f"POST OK: \n{item}")
+                    print(f"POST to {self.api2URL}: OK")
                 else:
                     if self.logger:
-                        self.logger.append(f'POST ERROR {response.status_code} \n{self.api2URL} \n{item}')
-                    print(f'POST to {self.api2URL}: ERROR {response.status_code}')
+                        self.logger.append(
+                            f"POST ERROR {response.status_code} \n{self.api2URL} \n{item}"
+                        )
+                    print(
+                        f"POST to {self.api2URL}: ERROR {response.status_code}"
+                    )
                     return 0
             except Exception as e:
                 if self.logger:
-                    self.logger.append(f'POST ERROR {e} \n{self.api2URL} \n{item}')
-                print(f'POST to {self.api2URL}: ERROR {e}')
+                    self.logger.append(
+                        f"POST ERROR {e} \n{self.api2URL} \n{item}"
+                    )
+                print(f"POST to {self.api2URL}: ERROR {e}")
                 return 0
+
+
+if __name__ == "__main__":
+    # mapping_path = '../../demo/pipelineTest.json'
+    mapping_path = "../../demo/mappingTestMock.json"
+
+    jsonHandler = JSONHandler(mapping_path)
+    dataSFURL = "https://651313e18e505cebc2e98c43.mockapi.io/DataSF"
+    HubSpotURL = "https://651313e18e505cebc2e98c43.mockapi.io/HubspotCompany"
+    studentsURL = "https://651313e18e505cebc2e98c43.mockapi.io/pupils"
+    pupilsURL = "https://651313e18e505cebc2e98c43.mockapi.io/students"
+
+    mapping = jsonHandler.read()
+    mapping = mapping["mapped"]
+
+    pipeline = Pipeline(studentsURL, pupilsURL, mapping)
+    pipeline.map_data(PIPELINE_NUMBER)
+    print(pipeline.mapped_data)
+    # pipeline.generate_pipeline()
