@@ -65,8 +65,6 @@ class VerificationApp(App):
             condition = "No Condition"
             if "conditions" in self.mapping[key]:
                 condition = self.mapping[key]["conditions"]
-                # for cond in conditionList:
-                #     condition += f"condition: {cond['condition']} fallback: {cond['fallback']}\n"
 
             mappingString = f"{key}  --   {self.mapping[key]['source_fields']}\nTransformation: {self.mapping[key]['transformation']}\nConditions: {condition}\n"
             temp = MappingVerification(mappingString, self.verifyDict)

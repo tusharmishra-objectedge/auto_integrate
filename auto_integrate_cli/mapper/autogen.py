@@ -199,7 +199,8 @@ These are the possible transformations to be performed on the source fields:
 
 If the transformation has specific values based on conditions, you should
 highlight them using the key "conditions" and the value for the transformation
-using the key "fallback". If conditions are present, they must be defined as shown in the example. The fallback value must be a valid field from API1 or null. Some key conditions are:
+using the key "fallback". If conditions are present, they must be defined as shown in the example.
+The fallback value must be a valid field from API1 or null. Some key conditions are:
 1. "ifNull": If the value is null.
 2. "ifEmpty": If the value is empty.
 3. "ifWrongFormat": If the value is in the wrong format and cannot be

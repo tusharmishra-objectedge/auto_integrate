@@ -7,11 +7,6 @@ from auto_integrate_cli.settings.default import (
 )
 from .autogen import extract
 
-# from autogen import extract
-
-
-from auto_integrate_cli.file_handler.json_handler import JSONHandler
-
 
 class APIFormatter:
     def __init__(self, input_obj, logger=None):
@@ -175,12 +170,3 @@ class APIFormatter:
                 data_type = type(value).__name__
                 api_data[key] = {"type": data_type, "sample_value": value}
         return api_data
-
-
-if __name__ == "__main__":
-    file_handler = JSONHandler("../../demo/inputs/nyc.json", "output.json")
-    inputs = file_handler.read()
-
-    apiFormatter = APIFormatter(inputs)
-
-    apiDetailsDict = apiFormatter.format()

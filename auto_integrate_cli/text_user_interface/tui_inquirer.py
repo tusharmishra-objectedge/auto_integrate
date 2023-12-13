@@ -139,8 +139,6 @@ if __name__ == "__main__":
 
     mapping = mapping["mapped"]
 
-    # print(mapping)
-
     tui = TUIInquirer(mapping, api1Fields, api2Fields)
     ans = tui.promptUser()
     print(ans)

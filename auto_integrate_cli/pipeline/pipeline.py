@@ -237,8 +237,6 @@ class Pipeline:
             condition = cond["condition"]
             fallback = cond["fallback"]
 
-            # todo: handle conditions for length mismatches
-
             if condition == "ifNull":
                 if (
                     sourceFields is None
@@ -256,16 +254,6 @@ class Pipeline:
                     returnVal = fallback
             elif condition == "ifWrongFormat":
                 returnVal = PIPELINE_CONDITION_DEFAULT
-            # elif condition == "ifLengthLessThan":
-            #     returnVal = PIPELINE_CONDITION_DEFAULT
-            # elif condition == "ifLengthGreaterThan":
-            #     returnVal = PIPELINE_CONDITION_DEFAULT
-            # elif condition == "ifLengthEqualTo":
-            #     returnVal = PIPELINE_CONDITION_DEFAULT
-            # elif condition == "ifLengthLessThanOrEqualTo":
-            #     returnVal = PIPELINE_CONDITION_DEFAULT
-            # elif condition == "ifLengthGreaterThanOrEqualTo":
-            #     returnVal = PIPELINE_CONDITION_DEFAULT
             elif condition == "isPrimary":
                 try:
                     primary = fallback

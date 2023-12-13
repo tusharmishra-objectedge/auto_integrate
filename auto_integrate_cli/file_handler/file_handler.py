@@ -25,6 +25,8 @@ class FileHandler:
 
     def append(self, data):
         if self.logger:
-            self.logger.append(f"Appending to file at path: {self.output_file}")
+            self.logger.append(
+                f"Appending to file at path: {self.output_file}"
+            )
         with open(self.output_file, "a") as f:
             f.write(data)

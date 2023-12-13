@@ -104,9 +104,15 @@ def main():
         "api2Fields": api2Fields,
     }
 
-    file_handler.output_file = "documentScraperAPITest.json"
+    documentScraperFilePath = (
+        "demo/extractOutput/"
+        + input_file.split("/")[-1].split(".")[0]
+        + "ExtractOutput.json"
+    )
+
+    file_handler.output_file = documentScraperFilePath
     file_handler.write(documentScraperOutput)
-    print("Wrote document scraper output to documentScraperAPITest.json")
+    print(f"Wrote document scraper output to {documentScraperFilePath}")
 
     file_handler.output_file = output_file
 
@@ -149,7 +155,6 @@ def main():
         correct = 0
         total = len(answers)
 
-        # print(f'Answers: {answers}')
         for value in answers.values():
             if value is True:
                 correct += 1
