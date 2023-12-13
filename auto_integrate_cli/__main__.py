@@ -1,12 +1,16 @@
+import logging
 import argparse
 import os
+<<<<<<< HEAD
 import pytest
+=======
+>>>>>>> 1a1e82e (docs(app): add docs and enhanced logging)
 
 from auto_integrate_cli.settings.default import DEFAULT_CWD, COVERAGE_THRESHOLD
-
+from auto_integrate_cli.settings.log_config import setup_logging
 from auto_integrate_cli.file_handler.json_handler import JSONHandler
-from auto_integrate_cli.file_handler.log_handler import LogHandler
 from auto_integrate_cli.api_formatter.base import APIFormatter
+<<<<<<< HEAD
 
 from auto_integrate_cli.text_user_interface.textual_ui import VerificationApp
 
@@ -14,7 +18,13 @@ from auto_integrate_cli.text_user_interface.textual_ui import VerificationApp
 from auto_integrate_cli.mapper.mappings import map_autogen
 
 # Pipeline
+=======
+from auto_integrate_cli.text_user_interface.textual_ui import VerificationApp
+from auto_integrate_cli.mapper.mappings import map_autogen
+>>>>>>> 1a1e82e (docs(app): add docs and enhanced logging)
 from auto_integrate_cli.pipeline.pipeline import Pipeline
+
+setup_logging()
 
 
 def get_args():
@@ -83,32 +93,27 @@ def main():
     output_file = os.path.join(DEFAULT_CWD, args.output_file)
     test_path = "tests"
 
-    # Logger
-    logsPath = "logs"
-    if not os.path.exists(logsPath):
-        os.makedirs(logsPath)
-    logger = LogHandler("logs/logs.txt")
-    logger.createLogFile()
-
     if args.runTests:
-        print(f"\nRunning tests at path: {test_path} ...\n")
+        logging.info(f"Running tests at path: {test_path}.")
+        print(f"Running tests at path: {test_path}.")
         run_tests()
         exit(0)
 
     # Read Inputs
-    print(f"\nReading input file at path: {input_file} ...\n")
-    file_handler = JSONHandler(input_file, output_file, logger)
+    logging.info(f"Reading input file at path: {input_file}.")
+    print(f"Reading input file at path: {input_file}.")
+    file_handler = JSONHandler(input_file, output_file)
     inputs = file_handler.read()
 
-    if not inputs["api1"] or not inputs["api2"]:
-        print("API1 or API2 is empty. Exiting...")
+    if not inputs.get("api1") or not inputs.get("api2"):
+        logging.error("API1 or API2 is empty. Exiting.")
         return
 
     api1URL = inputs["api1"]["url"]
     api2URL = inputs["api2"]["url"]
 
     # Format APIs
-    api_formatter = APIFormatter(inputs, logger)
+    api_formatter = APIFormatter(inputs)
 
     apiDetailsDict = api_formatter.format()
     api1 = apiDetailsDict["api1"]
@@ -131,13 +136,15 @@ def main():
 
     file_handler.output_file = documentScraperFilePath
     file_handler.write(documentScraperOutput)
-    print(f"Wrote document scraper output to {documentScraperFilePath}")
+    logging.info(
+        "Wrote document scraper output to documentScraperAPITest.json"
+    )
 
     file_handler.output_file = output_file
 
     # Mapping
-    output_obj = map_autogen(api1, api2, logger)
-    print(f"\nWriting output file at path: {output_file} ...\n")
+    output_obj = map_autogen(api1, api2)
+    logging.info(f"Writing output file at path: {output_file}.")
     file_handler.write(output_obj)
 
     mapping = output_obj["mapped"]
@@ -159,14 +166,14 @@ def main():
         print(f"{field}: {coverageDict[field]}")
     print()
 
-    logger.append(f"Coverage Details: {coverageDict}")
-    logger.append(f"Coverage: {coverage}")
+    logging.info(f"Coverage Details: {coverageDict}")
+    logging.info(f"Coverage: {coverage}")
 
     if coverage > COVERAGE_THRESHOLD:
         # Verify with user
-        logger.append(
-            f"Coverage is greater than {COVERAGE_THRESHOLD}."
-            f"Prompting User for verification..."
+        logging.info(
+            f"Coverage is greater than {COVERAGE_THRESHOLD}. \
+                Prompting User for verification."
         )
 
         verifyApp = VerificationApp(mapping)
@@ -176,24 +183,23 @@ def main():
         total = len(answers)
 
         for value in answers.values():
-            if value is True:
+            if value:
                 correct += 1
 
         print(
             f"\nYou verified {correct} out of {total} mappings as correct!\n"
         )
-        logger.append(str(answers))
-        logger.append(
-            f"Verified {correct} out of {total} mappings as correct!"
-        )
+        logging.info(str(answers))
+        logging.info(f"Verified {correct} out of {total} mappings as correct!")
 
-        pipeline = Pipeline(api1URL, api2URL, mapping, logger)
+        pipeline = Pipeline(api1URL, api2URL, mapping)
+        pipeline.map_data(10)
 
         # Generate Pipeline
         if correct == total:
-            logger.append("All mappings verified as correct!")
+            logging.info("All mappings verified as correct!")
             print("Generating Pipeline...")
-            pipeline = Pipeline(api1URL, api2URL, mapping, logger)
+            pipeline = Pipeline(api1URL, api2URL, mapping)
             pipeline.map_data(10)
 
             pipeline.generate_pipeline()

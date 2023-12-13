@@ -1,3 +1,4 @@
+import logging
 import autogen
 import json
 import re
@@ -5,7 +6,7 @@ import re
 from auto_integrate_cli.settings.default import AUTOGEN_RERUN_CONDITION
 
 
-def extract(information, logger=None):
+def extract(information):
     """
     Extract information from the API documentation.
 
@@ -111,7 +112,8 @@ When you find an answer, verify the answer carefully. Include verifiable
 evidence in your response if possible. Make sure that the answer is complete,
 precise, contextually in accordance to language skills. The answer must be in
 a valid JSON format without any character, symbol or comments that is not
-allowed in JSON. Do not abstract or concatenate the answer. Do not make up any information.
+allowed in JSON. Do not abstract or concatenate the answer. Do not make up any
+information.
 
 Example:
 {
@@ -221,13 +223,12 @@ information. {information}""",
     try:
         jsonString = json.loads(jsonString)
     except json.JSONDecodeError as e:
-        if logger:
-            logger.append(
-                f"Error parsing extract Task Manager output JSON: {e}"
-            )
-            logger.append(
-                "Checking for valid JSON in previous Task Manager messages"
-            )
+        logging.critical(
+            f"Error parsing extract Task Manager output JSON: {e}"
+        )
+        logging.info(
+            "Checking for valid JSON in previous Task Manager messages"
+        )
 
         # Parse through TaskManager messages if JSON format fails
         messages = user_proxy._oai_messages.values()
@@ -251,16 +252,14 @@ information. {information}""",
                 jsonStringInternal += matches.group(0)
             try:
                 msg_json = json.loads(jsonStringInternal)
-                if logger:
-                    logger.append(
-                        f"Found the valid JSON at TaskManager message {idx}"
-                    )
+                logging.info(
+                    f"Found the valid JSON at TaskManager message {idx}"
+                )
                 return msg_json
             except json.JSONDecodeError as e:
-                if logger:
-                    logger.append(
-                        f"Error parsing JSON from TaskManager message {idx}: {e}"
-                    )
+                logging.error(
+                    f"Error parsing JSON from TaskManager message {idx}: {e}"
+                )
                 continue
 
         return AUTOGEN_RERUN_CONDITION

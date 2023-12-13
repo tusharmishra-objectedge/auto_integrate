@@ -1,17 +1,17 @@
+import logging
 import os
 import sys
-
 import inquirer
 from inquirer.themes import GreenPassion
-
 from auto_integrate_cli.file_handler.json_handler import JSONHandler
+
 
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 sys.path.insert(0, parent_dir)
 
 
 class TUIInquirer:
-    def __init__(self, mapping, api1Fields, api2Fields, logger=None):
+    def __init__(self, mapping, api1Fields, api2Fields):
         """
         Initialize the TUIInquirer class
 
@@ -21,17 +21,16 @@ class TUIInquirer:
         self.mapping = mapping
         self.api1Fields = api1Fields
         self.api2Fields = api2Fields
-        self.logger = logger
         self.questions = []
 
     def prepareQuestions(self):
         """
         Verify mapping for user
-        Returns: Dict of answers from user, with key as api1 field name and values ad api2 field names
 
+        Returns:
+            answers (dict): key-value of api1 field name and api2 field name
         """
-        if self.logger:
-            self.logger.append("Verifying mapping using Text User Interface")
+        logging.info("Verifying mapping using Text User Interface")
         questions = []
 
         for field in self.mapping:
@@ -44,7 +43,10 @@ class TUIInquirer:
             q = (
                 inquirer.Checkbox(
                     name=field,
-                    message=f"{field} - {self.mapping[field]['source_fields']} \nTransformation: {self.mapping[field]['transformation']}\nConditions: {fieldConditions}\n(Press <space> to select, <Enter> to submit)",
+                    message=f"""{field} - {self.mapping[
+field]['source_fields']}\nTransformation: {self.mapping[
+field]['transformation']}\nConditions: {fieldConditions}\n(Press <space> to
+select, <Enter> to submit)""",
                     choices=["correct", "incorrect"],
                     default=["correct"],
                 ),
@@ -57,18 +59,15 @@ class TUIInquirer:
 
     def promptUser(self):
         """
-        Prompt user for verifying and choosing mapping for questions
-        Args:
-            questions: list of questions for inquirer
+        Prompt user for verifying and choosing mapping for questions.
 
-        Returns: Dict of answers from user, with key as api1 field name and values ad api2 field names
-
+        Returns:
+            answers (dict): key-value of api1 field name and api2 field name
         """
         self.prepareQuestions()
-        if self.logger:
-            self.logger.append(
-                "Prompting user for verifying and choosing mapping for questions"
-            )
+        logging.info(
+            "Prompting user for verifying and choosing mapping for questions"
+        )
         answers = inquirer.prompt(self.questions, theme=GreenPassion())
 
         return answers

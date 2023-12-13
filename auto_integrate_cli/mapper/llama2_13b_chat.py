@@ -12,7 +12,25 @@ from .base import BaseMapper
 
 
 class LLama2Mapper(BaseMapper):
+    """
+    LLama 2 Mapper
+
+    This class is used to map API 1 to API 2 using LLama 2.
+    (Deprecated)
+    """
+
     def __init__(self, api1, api2):
+        """
+        Initialize the LLama2Mapper class.
+
+        This function initializes the LLama2Mapper class with two APIs.
+
+        Parameters:
+            api1: api1 from api_formatter
+            api2: api2 from api_formatter
+
+        Returns: None
+        """
         super().__init__(api1, api2)
         self.model_path = os.path.join(
             MODELS_DIR, "llama-2-13b-chat.Q4_0.gguf"
@@ -47,6 +65,9 @@ class LLama2Mapper(BaseMapper):
         self.model = llm
 
     def set_prompt(self):
+        """
+        Sets the prompt for the LLama 2 model
+        """
         system_message = """Assistant's response is always in JSON."""
         user_prompt = f"""Match field names from api1 to api2 depending on the\
         meaning from field names and data type integration feasibility.\
@@ -60,6 +81,13 @@ class LLama2Mapper(BaseMapper):
         """
 
     def map(self):
+        """
+        Map two APIs using LLama 2.
+
+        This function maps two APIs using LLama 2. It returns two
+        dictionaries, one mapping from API 1 to API 2 and the other mapping
+        from API 2 to API 1.
+        """
         response = self.model(self.prompt)
         print(f"Response: {response}")
 

@@ -1,3 +1,4 @@
+import logging
 import autogen
 import json
 import re
@@ -7,7 +8,7 @@ from auto_integrate_cli.settings.default import AUTOGEN_RERUN_CONDITION
 
 
 class AutogenMapper(BaseMapper):
-    def __init__(self, api1, api2, logger=None):
+    def __init__(self, api1, api2):
         """
         Initialize the AutogenMapper class.
 
@@ -21,7 +22,8 @@ class AutogenMapper(BaseMapper):
         API key to use for the model. The API key is generated from the
         OpenAI API.
         """
-        super().__init__(api1, api2, logger)
+        super().__init__(api1, api2)
+        logging.info("Initializing BaseMapper::AutogenMapper")
         self.config_list = autogen.config_list_from_json(
             env_or_file="OAI_CONFIG_LIST",
             filter_dict={
@@ -199,8 +201,9 @@ These are the possible transformations to be performed on the source fields:
 
 If the transformation has specific values based on conditions, you should
 highlight them using the key "conditions" and the value for the transformation
-using the key "fallback". If conditions are present, they must be defined as shown in the example.
-The fallback value must be a valid field from API1 or null. Some key conditions are:
+using the key "fallback". If conditions are present, they must be defined as
+shown in the example. The fallback value must be a valid field from API1 or
+null. Some key conditions are:
 1. "ifNull": If the value is null.
 2. "ifEmpty": If the value is empty.
 3. "ifWrongFormat": If the value is in the wrong format and cannot be
@@ -257,13 +260,10 @@ Reply “TERMINATE” in the end when everything is done.""",
         try:
             jsonString = json.loads(jsonString)
         except json.JSONDecodeError as e:
-            if self.logger:
-                self.logger.append(
-                    f"Error parsing Task Manager output JSON: {e}"
-                )
-                self.logger.append(
-                    "Checking previous Task Manager messages for valid JSON"
-                )
+            logging.critical(f"Error parsing Task Manager output JSON: {e}")
+            logging.info(
+                "Checking previous Task Manager messages for valid JSON"
+            )
             print(f"Error parsing JSON: {e}")
 
             # Parse through TaskManager messages if JSON format fails
@@ -288,17 +288,19 @@ Reply “TERMINATE” in the end when everything is done.""",
                     jsonStringInternal += matches.group(0)
                 try:
                     msg_json = json.loads(jsonStringInternal)
-                    self.logger.append(
+                    logging.info(
                         f"Found the valid JSON at TaskManager message {idx}"
                     )
                     print(f"Found the valid JSON at TaskManager message {idx}")
                     return msg_json
                 except json.JSONDecodeError as e:
                     print(
-                        f"Error parsing JSON from TaskManager message {idx}: {e}"
+                        f"Error parsing JSON from TaskManager message \
+                        {idx}: {e}"
                     )
-                    self.logger.append(
-                        f"Error parsing JSON from TaskManager message {idx}: {e}"
+                    logging.error(
+                        f"Error parsing JSON from TaskManager message \
+                         {idx}: {e}"
                     )
                     print()
                     continue

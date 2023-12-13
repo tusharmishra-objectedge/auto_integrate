@@ -1,15 +1,23 @@
+import logging
 import requests
 from time import sleep
 
+from auto_integrate_cli.settings.constants import (
+    JSON_API,
+    JSON_DICT,
+    API_DOC,
+)
 from auto_integrate_cli.settings.default import (
     AUTOGEN_RERUN_CONDITION,
     AUTOGEN_RERUN_LIMIT,
 )
 from .autogen import extract
 
+from auto_integrate_cli.file_handler.json_handler import JSONHandler
+
 
 class APIFormatter:
-    def __init__(self, input_obj, logger=None):
+    def __init__(self, input_obj):
         """
         Constructor
 
@@ -21,14 +29,41 @@ class APIFormatter:
         Returns:
             None
         """
+        logging.info("Initializing APIFormatter")
         self.input_obj = input_obj
-        self.logger = logger
 
     def format(self):
-        if self.logger:
-            self.logger.append(
-                f"Formatting APIs: {self.input_obj['api1']}\n{self.input_obj['api2']}"
-            )
+        """
+        Format APIs from distinct sources into a standard format.
+
+        This function formats the APIs from various available sources into a
+        standard format. The distinct sources for the JSON API are:
+        - JSON_API: gets API information from URL of the GET request
+        - JSON_DICT: gets API information from a dictionary object
+        - API_DOC: gets API information from structured standardized API
+        data in dictionary format, containing the documentation information.
+
+        The standard format generated just using the above defined sources is:
+        ```json
+        {
+            "attribute_name": {"type": "type", "sample_value": "sample_value"}
+        }
+        ```
+        Here, the `attribute_name` is the name of the attribute in the API
+        response, `type` is the data type of the attribute, and `sample_value`
+        is the sample value of the attribute, typically the first value in the
+        API response.
+
+        If the api detail contains the `doc_website` key, then the recently
+        structured API is passed to the `extract` function in the `autogen`
+        module to extract information from the API documentation and aggregate
+        it with the structured API.
+
+        """
+        logging.info(
+            f"Formatting APIs: {self.input_obj['api1']}\n\
+            {self.input_obj['api2']}"
+        )
         api1_details = self.input_obj["api1"]
         api2_details = self.input_obj["api2"]
 
@@ -48,25 +83,20 @@ class APIFormatter:
             inputType = apiDetail["type"]
             json_obj = {}
 
-            if inputType == "json_api":
-                if self.logger:
-                    self.logger.append("Getting API details from URL")
+            if inputType == JSON_API:
+                logging.info("Getting API details from URL")
                 json_obj = self.get_json_api(apiDetail["url"])
                 apiDetailsDict[apiKey] = json_obj
                 apiDetailsDict[fieldKey] = json_obj
 
-            elif inputType == "json_dict":
-                if self.logger:
-                    self.logger.append("Getting API details from JSON")
+            elif inputType == JSON_DICT:
+                logging.info("Getting API details from JSON")
                 json_obj = self.get_json(apiDetail["data"])
                 apiDetailsDict[apiKey] = json_obj
                 apiDetailsDict[fieldKey] = json_obj
 
-            elif inputType == "api_doc":
-                if self.logger:
-                    self.logger.append(
-                        "Getting API details from API documentation"
-                    )
+            elif inputType == API_DOC:
+                logging.info("Getting API details from API documentation")
                 json_obj = apiDetail["data"]
                 apiDetailsDict[apiKey] = json_obj
                 for key, value in apiDetail["data"][0].items():
@@ -81,45 +111,32 @@ class APIFormatter:
                     }
 
             if "doc_website" in apiDetail.keys():
-                if self.logger:
-                    self.logger.append(
-                        f"Starting document extract autogen for {apiDetail['doc_website']}"
-                    )
+                logging.info(
+                    f"Starting document extract autogen for \
+                    {apiDetail['doc_website']}"
+                )
                 information = ""
                 if json_obj:
-                    information = f"""
-                    This is the starting API structure from the GET request:
-                    {json_obj}.
-                    """
-
+                    information = f"""This is the starting API structure from
+the GET request: {json_obj}."""
                 information += f"""\nThis is the API documentation website:
-                {apiDetail["doc_website"]}. \nNow you need to extract information and structure the API.
-                """
-                # json_obj = extract(information)
+{apiDetail["doc_website"]}. \nNow you need to extract information and
+structure the API."""
                 runs = 0
                 result = None
 
                 while runs < AUTOGEN_RERUN_LIMIT:
-                    if self.logger:
-                        self.logger.append(
-                            f"Starting autogen extract run {runs}"
-                        )
+                    logging.info(f"Starting autogen extract run {runs}")
                     sleep(1)
                     print()
                     print(f"----- STARTING AUTOGEN EXTRACT RUN {runs} -----")
                     print()
-                    result = extract(information, self.logger)
+                    result = extract(information)
                     if result != AUTOGEN_RERUN_CONDITION:
-                        if self.logger:
-                            self.logger.append(
-                                f"Autogen extract run {runs} successful"
-                            )
+                        logging.info(f"Autogen extract run {runs} successful")
                         break
                     else:
-                        if self.logger:
-                            self.logger.append(
-                                f"Autogen extract run {runs} failed"
-                            )
+                        logging.critical(f"Autogen extract run {runs} failed")
 
                     runs += 1
                 json_obj = result
@@ -128,12 +145,11 @@ class APIFormatter:
                     apiDetailsDict[apiKey] = {}
                 apiDetailsDict[apiKey] = json_obj
 
-        if self.logger:
-            self.logger.append("APIs formatted")
-            self.logger.append(f"API1: {apiDetailsDict['api1']}")
-            self.logger.append(f"API1 Fields: {apiDetailsDict['api1Fields']}")
-            self.logger.append(f"API2: {apiDetailsDict['api2']}")
-            self.logger.append(f"API2 Fields: {apiDetailsDict['api2Fields']}")
+        logging.info("APIs formatted")
+        logging.info(f"API1: {apiDetailsDict['api1']}")
+        logging.info(f"API1 Fields: {apiDetailsDict['api1Fields']}")
+        logging.info(f"API2: {apiDetailsDict['api2']}")
+        logging.info(f"API2 Fields: {apiDetailsDict['api2Fields']}")
         return apiDetailsDict
 
     def get_json_api(self, url):
@@ -150,17 +166,11 @@ class APIFormatter:
         """
         response = requests.get(url)
         if response.status_code == 200:
-            print("GET JSON API: OK")
+            logging.info("GET JSON API: OK")
             data = response.json()
-            api_data = {}
-
-            if len(data) > 0:
-                for key, value in data[0].items():
-                    data_type = type(value).__name__
-                    api_data[key] = {"type": data_type, "sample_value": value}
-            return api_data
+            return self.get_json(data)
         else:
-            print("JSON API GET: ERROR ", response.status_code)
+            logging.error("JSON API GET: ERROR ", response.status_code)
             return {}
 
     def get_json(self, data):
@@ -170,3 +180,15 @@ class APIFormatter:
                 data_type = type(value).__name__
                 api_data[key] = {"type": data_type, "sample_value": value}
         return api_data
+
+
+if __name__ == "__main__":
+    """
+    Isolated manual test of the APIFormatter class.
+    """
+    file_handler = JSONHandler("../../demo/inputs/nyc.json", "output.json")
+    inputs = file_handler.read()
+
+    apiFormatter = APIFormatter(inputs)
+
+    apiDetailsDict = apiFormatter.format()

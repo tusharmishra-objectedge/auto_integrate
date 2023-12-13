@@ -1,3 +1,4 @@
+import logging
 import requests
 import json
 from datetime import datetime
@@ -14,22 +15,21 @@ from auto_integrate_cli.file_handler.json_handler import JSONHandler
 
 class Pipeline:
     """
-    Pipeline
+    Integration Pipeline Class
     Uses mapping to map data from api1 to api2 and generate pipeline.
     Applies appropriate transformations and conditions.
     GETs data from api1 and POSTs to api2.
     """
 
-    def __init__(self, api1URL, api2URL, mapping, logger=None):
+    def __init__(self, api1URL, api2URL, mapping):
         self.api1URL = api1URL
         self.api2URL = api2URL
         self.mapping = mapping
         self.mapped_data = None
-        self.logger = logger
 
     def map_data(self, num_of_records=None):
         """
-        map_data
+        Integrate Data from API1 to API2
 
         This function maps uses the mapping to change api1 data
         to fields necessary for api2.
@@ -43,17 +43,14 @@ class Pipeline:
         """
 
         dataAPI1 = self.get_data_from_api(num_of_records)
-        if self.logger:
-            self.logger.append(
-                f"Got {len(dataAPI1)} records from {self.api1URL}"
-            )
+        logging.info(f"Got {len(dataAPI1)} records from {self.api1URL}")
 
         mapped_data = []
 
-        if self.logger:
-            self.logger.append(
-                f"Mapping {len(dataAPI1)} records from {self.api1URL}"
-            )
+        logging.info(
+            f"Mapping {len(dataAPI1)} records from \
+                     {self.api1URL}"
+        )
         for datum in dataAPI1:
             mapped_datum = {}
             for targetKey in self.mapping.keys():
@@ -169,7 +166,7 @@ class Pipeline:
                     else:
                         dateObject = datetime.fromisoformat(dateString)
                 except ValueError as e:
-                    print(
+                    logging.error(
                         f"Error {e} converting as ISO: {dateString},\
                          using dateutil parser"
                     )
@@ -221,10 +218,10 @@ class Pipeline:
         handleConditions
 
         This function handles the conditions and returns the appropriate value.
-        If a condition applies, appropriate value will be returned,
-        else PIPELINE_CONDITION_DEFAULT will be returned
-        If more than one condition,
-        we assume the last condition has the highest priority
+        If a condition applies, appropriate value will be returned, else
+        PIPELINE_CONDITION_DEFAULT will be returned
+        If more than one condition, we assume the last condition has highest
+        priority
 
         Parameters:
             conditions (list): The conditions
@@ -292,20 +289,16 @@ class Pipeline:
 
                 return data
             else:
-                if self.logger:
-                    self.logger.append(
-                        f"Error getting data from {self.api1URL}:\
-                         {response.status_code}"
-                    )
+                logging.error(
+                    f"Error getting data from {self.api1URL}: \
+                        {response.status_code}"
+                )
                 print(
-                    f"Error getting data from {self.api1URL}:\
-                     {response.status_code}"
+                    f"Error getting data from {self.api1URL}: \
+                        {response.status_code}"
                 )
         except Exception as e:
-            if self.logger:
-                self.logger.append(
-                    f"Error getting data from {self.api1URL}: {e}"
-                )
+            logging.error(f"Error getting data from {self.api1URL}: {e}")
             print(f"Error getting data from {self.api1URL}: {e}")
             return None
 
@@ -323,36 +316,31 @@ class Pipeline:
         Returns:
             int: Number of records processed
         """
-        if self.logger:
-            self.logger.append(
-                f"Generating pipeline for {len(self.mapped_data)} \
-                records from \n{self.api1URL} \nto \n{self.api2URL}"
-            )
+        logging.info(
+            f"Generating pipeline for {len(self.mapped_data)} \
+            records from \n{self.api1URL} \nto \n{self.api2URL}"
+        )
         itemsProcessed = 0
 
         for item in self.mapped_data:
             try:
                 response = requests.post(self.api2URL, json=item)
                 if response.status_code == 200 or response.status_code == 201:
-                    if self.logger:
-                        self.logger.append(f"POST OK: \n{item}")
+                    logging.info(f"POST OK: \n{item}")
                     print(f"POST to {self.api2URL}: OK")
                     itemsProcessed += 1
                 else:
-                    if self.logger:
-                        self.logger.append(
-                            f"POST ERROR {response.status_code}\
-                             \n{self.api2URL} \n{item}"
-                        )
-                    print(
-                        f"POST to {self.api2URL}: ERROR {response.status_code}"
+                    logging.error(
+                        f"POST ERROR {response.status_code} \n{self.api2URL}\
+                        \n{item}"
+                    )
+                    logging.error(
+                        f"POST to {self.api2URL}: ERROR \
+                        {response.status_code}"
                     )
                     return 0
             except Exception as e:
-                if self.logger:
-                    self.logger.append(
-                        f"POST ERROR {e} \n{self.api2URL} \n{item}"
-                    )
+                logging.error(f"POST ERROR {e} \n{self.api2URL} \n{item}")
                 print(f"POST to {self.api2URL}: ERROR {e}")
                 return 0
 

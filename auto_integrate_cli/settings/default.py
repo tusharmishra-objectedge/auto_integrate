@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 DEFAULT_CWD = "demo"
+DEFAULT_LOG_DIR = "logs"
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 OPENAI_API_ORG_ID = os.getenv("OPENAI_API_ORG_ID")
 MODELS_DIR = "../models"

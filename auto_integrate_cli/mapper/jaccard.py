@@ -2,16 +2,51 @@ from .base import BaseMapper
 
 
 class JaccardSimilarityMapper(BaseMapper):
+    """
+    Map API 1 to API 2 using Jaccard similarity.
+    """
+
     def __init__(self, api1, api2):
+        """
+        Initialize the JaccardSimilarityMapper class.
+
+        This function initializes the JaccardSimilarityMapper class with two
+        APIs.
+
+        Parameters:
+            api1: api1 from api_formatter
+            api2: api2 from api_formatter
+
+        Returns: None
+        """
         super().__init__(api1, api2)
         self.similarity_threshold = 0.5
 
     def calculate_similarity(self, attr1, attr2):
+        """
+        Calculate similarity between two strings.
+
+        This function calculates the similarity between two strings using the
+        Jaccard similarity.
+
+        Parameters:
+            attr1: first string, typically an attribute name
+            attr2: second string, typically an attribute name
+
+        Returns: similarity between the two strings
+        """
         set1 = set(attr1.lower())
         set2 = set(attr2.lower())
         return len(set1.intersection(set2)) / len(set1.union(set2))
 
     def map(self):
+        """
+        (Deprecated) Map two APIs using Jaccard similarity.
+
+        This function maps two APIs using Jaccard similarity. It returns two
+        dictionaries, one mapping from API 1 to API 2 and the other mapping
+        from API 2 to API 1.
+        """
         l2r_mapping = {}
         r2l_mapping = {}
 

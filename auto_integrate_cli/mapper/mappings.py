@@ -1,3 +1,5 @@
+import logging
+
 from auto_integrate_cli.mapper.fuzzy import FuzzMapper
 from auto_integrate_cli.mapper.jaccard import JaccardSimilarityMapper
 from auto_integrate_cli.mapper.openai import OpenAIAPIMapper
@@ -12,7 +14,7 @@ from auto_integrate_cli.settings.default import (
 
 def map_fuzzy(api1, api2):
     """
-    Map API 1 to API 2 using fuzzy string matching.
+    (Deprecated) Map API 1 to API 2 using fuzzy string matching.
 
     Note: This function is not used in the current version.
     """
@@ -27,7 +29,7 @@ def map_fuzzy(api1, api2):
 
 def map_jaccard(api1, api2):
     """
-    Map API 1 to API 2 using Jaccard similarity.
+    (Deprecated) Map API 1 to API 2 using Jaccard similarity.
 
     Note: This function is not used in the current version.
     """
@@ -42,7 +44,7 @@ def map_jaccard(api1, api2):
 
 def map_openai(api1, api2, engine="text-davinci-003"):
     """
-    Map API 1 to API 2 using OpenAI API.
+    (Deprecated) Map API 1 to API 2 using OpenAI API.
 
     Note: This function is not used in the current version.
     """
@@ -55,9 +57,16 @@ def map_openai(api1, api2, engine="text-davinci-003"):
 
 def map_llama2(api1, api2):
     """
-    Map API 1 to API 2 using LLama2.
+    (Deprecated) Map API 1 to API 2 using LLama2.
 
     Note: This function is not used in the current version.
+
+    Parameters:
+        api1: api1 from api_formatter
+        api2: api2 from api_formatter
+
+    Returns:
+        output_obj: output object containing the mappings
     """
     llama2_mapper = LLama2Mapper(api1, api2)
     return {
@@ -66,34 +75,37 @@ def map_llama2(api1, api2):
     }
 
 
-def map_autogen(api1, api2, logger=None):
+def map_autogen(api1, api2):
     """
     Map API 1 to API 2 using Autogen AI multi-agent conversational framework.
 
     This function runs upto AUTOGEN_RERUN_LIMIT times, which value is defined
     in settings.default.py. If AUTOGEN_RERUN_CONDITION is not met, then it
     returns None. Otherwise, it returns the result of the mapping.
+
+    Parameters:
+        api1: api1 from api_formatter
+        api2: api2 from api_formatter
+
+    Returns:
+        None or result of the mapping
     """
-    if logger:
-        logger.append("Starting autogen mapper")
-    autogen_mapper = AutogenMapper(api1, api2, logger)
+    logging.info("Starting autogen mapper")
+    autogen_mapper = AutogenMapper(api1, api2)
     runs = 0
     result = None
 
     while runs < AUTOGEN_RERUN_LIMIT:
-        if logger:
-            logger.append(f"Starting autogen mapping run {runs}")
+        logging.info(f"Starting autogen mapping run {runs}")
         print()
         print(f"----- STARTING AUTOGEN RUN {runs} -----")
         print()
         result = autogen_mapper.map()
         if result != AUTOGEN_RERUN_CONDITION:
-            if logger:
-                logger.append(f"Autogen mapping run {runs} successful")
+            logging.info(f"Autogen mapping run {runs} successful")
             break
         else:
-            if logger:
-                logger.append(f"Autogen mapping run {runs} failed")
+            logging.critical(f"Autogen mapping run {runs} failed")
 
         runs += 1
 
@@ -110,6 +122,15 @@ def mappings(api1, api2, manual_L2R=None, manual_R2L=None):
     This function uses multiple available classes to map API 1 to API 2.
 
     Note: This function is not used in the current version.
+
+    Parameters:
+        api1: api1 from api_formatter
+        api2: api2 from api_formatter
+        manual_L2R: manually mapped L2R mapping
+        manual_R2L: manually mapped R2L mapping
+
+    Returns:
+        output_obj: output object containing the mappings
     """
     output_obj = {}
     output_obj["api1"] = api1
