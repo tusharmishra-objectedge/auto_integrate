@@ -1,5 +1,6 @@
 from datetime import datetime
 
+
 class LogHandler:
     def __init__(self, log_file):
         """

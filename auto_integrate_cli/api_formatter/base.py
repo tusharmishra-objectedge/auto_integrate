@@ -6,6 +6,7 @@ from auto_integrate_cli.settings.default import (
     AUTOGEN_RERUN_LIMIT,
 )
 from .autogen import extract
+
 # from autogen import extract
 
 
@@ -30,7 +31,9 @@ class APIFormatter:
 
     def format(self):
         if self.logger:
-            self.logger.append(f"Formatting APIs: {self.input_obj['api1']}\n{self.input_obj['api2']}")
+            self.logger.append(
+                f"Formatting APIs: {self.input_obj['api1']}\n{self.input_obj['api2']}"
+            )
         api1_details = self.input_obj["api1"]
         api2_details = self.input_obj["api2"]
 
@@ -52,22 +55,23 @@ class APIFormatter:
 
             if inputType == "json_api":
                 if self.logger:
-                    self.logger.append(f'Getting API details from URL')
+                    self.logger.append("Getting API details from URL")
                 json_obj = self.get_json_api(apiDetail["url"])
                 apiDetailsDict[apiKey] = json_obj
                 apiDetailsDict[fieldKey] = json_obj
 
             elif inputType == "json_dict":
                 if self.logger:
-                    self.logger.append(f'Getting API details from JSON')
+                    self.logger.append("Getting API details from JSON")
                 json_obj = self.get_json(apiDetail["data"])
                 apiDetailsDict[apiKey] = json_obj
                 apiDetailsDict[fieldKey] = json_obj
 
-
             elif inputType == "api_doc":
                 if self.logger:
-                    self.logger.append(f'Getting API details from API documentation')
+                    self.logger.append(
+                        "Getting API details from API documentation"
+                    )
                 json_obj = apiDetail["data"]
                 apiDetailsDict[apiKey] = json_obj
                 for key, value in apiDetail["data"][0].items():
@@ -76,11 +80,16 @@ class APIFormatter:
                     sampleVal = value["sample_value"]
                     if field not in apiDetailsDict[fieldKey].keys():
                         apiDetailsDict[fieldKey][field] = {}
-                    apiDetailsDict[fieldKey][field] = {"type": fieldType, "sample_value": sampleVal}
+                    apiDetailsDict[fieldKey][field] = {
+                        "type": fieldType,
+                        "sample_value": sampleVal,
+                    }
 
             if "doc_website" in apiDetail.keys():
                 if self.logger:
-                    self.logger.append(f"Starting document extract autogen for {apiDetail['doc_website']}")
+                    self.logger.append(
+                        f"Starting document extract autogen for {apiDetail['doc_website']}"
+                    )
                 information = ""
                 if json_obj:
                     information = f"""
@@ -97,7 +106,9 @@ class APIFormatter:
 
                 while runs < AUTOGEN_RERUN_LIMIT:
                     if self.logger:
-                        self.logger.append(f"Starting autogen extract run {runs}")
+                        self.logger.append(
+                            f"Starting autogen extract run {runs}"
+                        )
                     sleep(1)
                     print()
                     print(f"----- STARTING AUTOGEN EXTRACT RUN {runs} -----")
@@ -105,11 +116,15 @@ class APIFormatter:
                     result = extract(information, self.logger)
                     if result != AUTOGEN_RERUN_CONDITION:
                         if self.logger:
-                            self.logger.append(f"Autogen extract run {runs} successful")
+                            self.logger.append(
+                                f"Autogen extract run {runs} successful"
+                            )
                         break
                     else:
                         if self.logger:
-                            self.logger.append(f"Autogen extract run {runs} failed")
+                            self.logger.append(
+                                f"Autogen extract run {runs} failed"
+                            )
 
                     runs += 1
                 json_obj = result
@@ -119,7 +134,7 @@ class APIFormatter:
                 apiDetailsDict[apiKey] = json_obj
 
         if self.logger:
-            self.logger.append(f"APIs formatted")
+            self.logger.append("APIs formatted")
             self.logger.append(f"API1: {apiDetailsDict['api1']}")
             self.logger.append(f"API1 Fields: {apiDetailsDict['api1Fields']}")
             self.logger.append(f"API2: {apiDetailsDict['api2']}")
@@ -161,9 +176,8 @@ class APIFormatter:
                 api_data[key] = {"type": data_type, "sample_value": value}
         return api_data
 
+
 if __name__ == "__main__":
-
-
     file_handler = JSONHandler("../../demo/inputs/nyc.json", "output.json")
     inputs = file_handler.read()
 

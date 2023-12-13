@@ -257,8 +257,12 @@ Reply “TERMINATE” in the end when everything is done.""",
             jsonString = json.loads(jsonString)
         except json.JSONDecodeError as e:
             if self.logger:
-                self.logger.append(f"Error parsing Task Manager output JSON: {e}")
-                self.logger.append("Checking previous Task Manager messages for valid JSON")
+                self.logger.append(
+                    f"Error parsing Task Manager output JSON: {e}"
+                )
+                self.logger.append(
+                    "Checking previous Task Manager messages for valid JSON"
+                )
             print(f"Error parsing JSON: {e}")
 
             # Parse through TaskManager messages if JSON format fails
@@ -283,12 +287,18 @@ Reply “TERMINATE” in the end when everything is done.""",
                     jsonStringInternal += matches.group(0)
                 try:
                     msg_json = json.loads(jsonStringInternal)
-                    self.logger.append(f"Found the valid JSON at TaskManager message {idx}")
+                    self.logger.append(
+                        f"Found the valid JSON at TaskManager message {idx}"
+                    )
                     print(f"Found the valid JSON at TaskManager message {idx}")
                     return msg_json
                 except json.JSONDecodeError as e:
-                    print(f"Error parsing JSON from TaskManager message {idx}: {e}")
-                    self.logger.append(f"Error parsing JSON from TaskManager message {idx}: {e}")
+                    print(
+                        f"Error parsing JSON from TaskManager message {idx}: {e}"
+                    )
+                    self.logger.append(
+                        f"Error parsing JSON from TaskManager message {idx}: {e}"
+                    )
                     print()
                     continue
 

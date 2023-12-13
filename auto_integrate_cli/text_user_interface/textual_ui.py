@@ -1,20 +1,21 @@
 from textual.app import App, ComposeResult
-from textual.containers import ScrollableContainer, Container
 from textual.widgets import Button, Header, Footer, Static
-
+from auto_integrate_cli.file_handler.json_handler import JSONHandler
 
 import os
 import sys
-parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
+
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 sys.path.insert(0, parent_dir)
-from auto_integrate_cli.file_handler.json_handler import JSONHandler
 
 
 class MappingDetail(Static):
     """A widget to display a mapping."""
 
+
 class MappingVerification(Static):
     """A widget to display a mapping."""
+
     def __init__(self, mapping, verifyDict):
         self.mappingString = mapping
         self.verifyDict = verifyDict
@@ -35,39 +36,40 @@ class MappingVerification(Static):
             buttonField = self.mappingString.split("  --   ")[0]
             self.verifyDict[buttonField] = False
 
-
     def compose(self) -> ComposeResult:
         """Create child widgets for the app."""
         yield Button("Correct", id="correctButton", variant="success")
         yield Button("Incorrect", id="incorrectButton", variant="error")
         yield MappingDetail(self.mappingString)
 
+
 class VerificationApp(App):
-    """ Textual app to verify mappings"""
+    """Textual app to verify mappings"""
+
     def __init__(self, mapping):
         self.mapping = mapping
         self.verifyDict = {field: False for field in self.mapping}
         super().__init__()
 
-
     CSS_PATH = "verification.tcss"
-    BINDINGS = [("d", "toggle_dark", "Toggle dark mode"), ("q", "exit_app", "Exit App")]
+    BINDINGS = [
+        ("d", "toggle_dark", "Toggle dark mode"),
+        ("q", "exit_app", "Exit App"),
+    ]
     TITLE = "Mapping Verification"
-
 
     def compose(self) -> ComposeResult:
         """Create child widgets for the app."""
-        mappingVers = []
 
         for key in self.mapping:
             condition = "No Condition"
-            if 'conditions' in self.mapping[key]:
-                condition = self.mapping[key]['conditions']
+            if "conditions" in self.mapping[key]:
+                condition = self.mapping[key]["conditions"]
                 # for cond in conditionList:
                 #     condition += f"condition: {cond['condition']} fallback: {cond['fallback']}\n"
 
             mappingString = f"{key}  --   {self.mapping[key]['source_fields']}\nTransformation: {self.mapping[key]['transformation']}\nConditions: {condition}\n"
-            temp = (MappingVerification(mappingString, self.verifyDict))
+            temp = MappingVerification(mappingString, self.verifyDict)
 
             yield temp
 
@@ -92,10 +94,10 @@ class VerificationApp(App):
 
 if __name__ == "__main__":
     mappingPath = "../../demo/pipelineTest.json"
-    mappingFile = JSONHandler(mappingPath, 'output.txt')
+    mappingFile = JSONHandler(mappingPath, "output.txt")
 
     mapping = mappingFile.read()
-    mapping = mapping['mapped']
+    mapping = mapping["mapped"]
 
     app = VerificationApp(mapping)
     result = app.run()

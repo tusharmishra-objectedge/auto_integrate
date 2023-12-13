@@ -222,8 +222,12 @@ information. {information}""",
         jsonString = json.loads(jsonString)
     except json.JSONDecodeError as e:
         if logger:
-            logger.append(f"Error parsing extract Task Manager output JSON: {e}")
-            logger.append(f"Checking for valid JSON in previous Task Manager messages")
+            logger.append(
+                f"Error parsing extract Task Manager output JSON: {e}"
+            )
+            logger.append(
+                "Checking for valid JSON in previous Task Manager messages"
+            )
 
         # Parse through TaskManager messages if JSON format fails
         messages = user_proxy._oai_messages.values()
@@ -248,11 +252,15 @@ information. {information}""",
             try:
                 msg_json = json.loads(jsonStringInternal)
                 if logger:
-                    logger.append(f"Found the valid JSON at TaskManager message {idx}")
+                    logger.append(
+                        f"Found the valid JSON at TaskManager message {idx}"
+                    )
                 return msg_json
             except json.JSONDecodeError as e:
                 if logger:
-                    logger.append(f"Error parsing JSON from TaskManager message {idx}: {e}")
+                    logger.append(
+                        f"Error parsing JSON from TaskManager message {idx}: {e}"
+                    )
                 continue
 
         return AUTOGEN_RERUN_CONDITION

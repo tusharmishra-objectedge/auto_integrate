@@ -1,6 +1,5 @@
 import argparse
 import os
-import requests
 
 from auto_integrate_cli.settings.default import DEFAULT_CWD, COVERAGE_THRESHOLD
 
@@ -8,11 +7,10 @@ from auto_integrate_cli.file_handler.json_handler import JSONHandler
 from auto_integrate_cli.file_handler.log_handler import LogHandler
 from auto_integrate_cli.api_formatter.base import APIFormatter
 
-from auto_integrate_cli.text_user_interface.tui_inquirer import TUIInquirer
 from auto_integrate_cli.text_user_interface.textual_ui import VerificationApp
 
 # Mappers
-from auto_integrate_cli.mapper.mappings import mappings, map_autogen
+from auto_integrate_cli.mapper.mappings import map_autogen
 
 # Pipeline
 from auto_integrate_cli.pipeline.pipeline import Pipeline
@@ -87,7 +85,6 @@ def main():
         print("API1 or API2 is empty. Exiting...")
         return
 
-
     api1URL = inputs["api1"]["url"]
     api2URL = inputs["api2"]["url"]
 
@@ -100,11 +97,16 @@ def main():
     api2 = apiDetailsDict["api2"]
     api2Fields = apiDetailsDict["api2Fields"]
 
-    documentScraperOutput = {"api1": api1, "api1Fields": api1Fields, "api2": api2, "api2Fields": api2Fields}
+    documentScraperOutput = {
+        "api1": api1,
+        "api1Fields": api1Fields,
+        "api2": api2,
+        "api2Fields": api2Fields,
+    }
 
     file_handler.output_file = "documentScraperAPITest.json"
     file_handler.write(documentScraperOutput)
-    print('Wrote document scraper output to documentScraperAPITest.json')
+    print("Wrote document scraper output to documentScraperAPITest.json")
 
     file_handler.output_file = output_file
 
@@ -137,7 +139,9 @@ def main():
 
     if coverage > COVERAGE_THRESHOLD:
         # Verify with user
-        logger.append(f"Coverage is greater than {COVERAGE_THRESHOLD}. Prompting User for verification...")
+        logger.append(
+            f"Coverage is greater than {COVERAGE_THRESHOLD}. Prompting User for verification..."
+        )
 
         verifyApp = VerificationApp(mapping)
         answers = verifyApp.run()
@@ -147,26 +151,31 @@ def main():
 
         # print(f'Answers: {answers}')
         for value in answers.values():
-            if value == True:
+            if value is True:
                 correct += 1
 
-        print(f"\nYou verified {correct} out of {total} mappings as correct!\n")
+        print(
+            f"\nYou verified {correct} out of {total} mappings as correct!\n"
+        )
         logger.append(str(answers))
-        logger.append(f"Verified {correct} out of {total} mappings as correct!")
+        logger.append(
+            f"Verified {correct} out of {total} mappings as correct!"
+        )
 
         pipeline = Pipeline(api1URL, api2URL, mapping, logger)
-        mapped_data = pipeline.map_data(10)
 
         # Generate Pipeline
         if correct == total:
-            logger.append(f"All mappings verified as correct!")
+            logger.append("All mappings verified as correct!")
             print("Generating Pipeline...")
             pipeline = Pipeline(api1URL, api2URL, mapping, logger)
-            mapped_data = pipeline.map_data(10)
+            pipeline.map_data(10)
 
             pipeline.generate_pipeline()
         else:
-            print("Please verify all mappings as correct to generate pipeline.")
+            print(
+                "Please verify all mappings as correct to generate pipeline."
+            )
 
 
 if __name__ == "__main__":
