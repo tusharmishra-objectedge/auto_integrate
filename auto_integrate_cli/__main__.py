@@ -1,5 +1,6 @@
 import argparse
 import os
+import pytest
 
 from auto_integrate_cli.settings.default import DEFAULT_CWD, COVERAGE_THRESHOLD
 
@@ -47,7 +48,19 @@ def get_args():
         type=str,
         default="output.txt",
     )
+    parser.add_argument(
+        "--runTests",
+        action="store_true",
+        help="Run all unit tests",
+        required=False,
+    )
+
     return parser.parse_args()
+
+
+def run_tests():
+    test_path = "tests"
+    pytest.main([test_path])
 
 
 def main():
@@ -68,6 +81,7 @@ def main():
     args = get_args()
     input_file = os.path.join(DEFAULT_CWD, args.input_file)
     output_file = os.path.join(DEFAULT_CWD, args.output_file)
+    test_path = "tests"
 
     # Logger
     logsPath = "logs"
@@ -75,6 +89,11 @@ def main():
         os.makedirs(logsPath)
     logger = LogHandler("logs/logs.txt")
     logger.createLogFile()
+
+    if args.runTests:
+        print(f"\nRunning tests at path: {test_path} ...\n")
+        run_tests()
+        exit(0)
 
     # Read Inputs
     print(f"\nReading input file at path: {input_file} ...\n")
@@ -146,7 +165,8 @@ def main():
     if coverage > COVERAGE_THRESHOLD:
         # Verify with user
         logger.append(
-            f"Coverage is greater than {COVERAGE_THRESHOLD}. Prompting User for verification..."
+            f"Coverage is greater than {COVERAGE_THRESHOLD}."
+            f"Prompting User for verification..."
         )
 
         verifyApp = VerificationApp(mapping)
