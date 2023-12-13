@@ -170,7 +170,7 @@ structure the API."""
             data = response.json()
             return self.get_json(data)
         else:
-            logging.error("JSON API GET: ERROR ", response.status_code)
+            logging.error("JSON API GET: ERROR %d", response.status_code)
             return {}
 
     def get_json(self, data):

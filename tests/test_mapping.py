@@ -13,7 +13,7 @@ class TestMappings:
 
         result = map_autogen(api1, api2)
 
-        mock_autogen_mapper.assert_called_once_with(api1, api2, None)
+        mock_autogen_mapper.assert_called_once_with(api1, api2)
 
         mock_instance.map.assert_called_once()
 

@@ -1,16 +1,13 @@
 import logging
 import argparse
 import os
-<<<<<<< HEAD
 import pytest
-=======
->>>>>>> 1a1e82e (docs(app): add docs and enhanced logging)
+
 
 from auto_integrate_cli.settings.default import DEFAULT_CWD, COVERAGE_THRESHOLD
 from auto_integrate_cli.settings.log_config import setup_logging
 from auto_integrate_cli.file_handler.json_handler import JSONHandler
 from auto_integrate_cli.api_formatter.base import APIFormatter
-<<<<<<< HEAD
 
 from auto_integrate_cli.text_user_interface.textual_ui import VerificationApp
 
@@ -18,10 +15,6 @@ from auto_integrate_cli.text_user_interface.textual_ui import VerificationApp
 from auto_integrate_cli.mapper.mappings import map_autogen
 
 # Pipeline
-=======
-from auto_integrate_cli.text_user_interface.textual_ui import VerificationApp
-from auto_integrate_cli.mapper.mappings import map_autogen
->>>>>>> 1a1e82e (docs(app): add docs and enhanced logging)
 from auto_integrate_cli.pipeline.pipeline import Pipeline
 
 setup_logging()
