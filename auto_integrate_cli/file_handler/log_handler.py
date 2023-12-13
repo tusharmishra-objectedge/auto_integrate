@@ -12,12 +12,18 @@ class LogHandler:
         self.log_file = log_file
 
     def createLogFile(self):
+        """
+        Create a log file with the current date and time
+        """
         with open(self.log_file, "w+") as f:
             f.write("Log File created at: ")
             f.write(str(datetime.now()))
             f.write("\n\n")
 
     def append(self, data):
+        """
+        Append to the log file at the given path.
+        """
         with open(self.log_file, "a+") as f:
             f.write("----------------------------------------\n")
             f.write(str(datetime.now()) + "\n")

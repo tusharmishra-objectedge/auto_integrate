@@ -1,15 +1,15 @@
 {
- "url1": "https://651313e18e505cebc2e98c43.mockapi.io/students",
+  "url1": "https://651313e18e505cebc2e98c43.mockapi.io/students",
   "url2": "https://651313e18e505cebc2e98c43.mockapi.io/pupils",
   "mapped_fields" : {
-  "'emergencyContactNumber'": "'emergencyContact',",
-  "'DoB'": "'dateOfBirth',",
-  "'city'": "'city',",
-  "'state'": "'state',",
-  "'street'": "'address',",
-  "'score'": "'grade',",
-  "'honorStudent'": "'honors',",
-  "'created'": "'createdAt',",
-  "'id'": "'id'"
+    "'emergencyContactNumber'": "'emergencyContact',",
+    "'DoB'": "'dateOfBirth',",
+    "'city'": "'city',",
+    "'state'": "'state',",
+    "'street'": "'address',",
+    "'score'": "'grade',",
+    "'honorStudent'": "'honors',",
+    "'created'": "'createdAt',",
+    "'id'": "'id'"
   }
 }
