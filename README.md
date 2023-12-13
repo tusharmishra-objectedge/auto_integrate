@@ -17,9 +17,9 @@ pip3 install -r requirements.txt
 Examples of how to use the application, including all the available commands and their options.
 
 ## Running the program
-The program needs to be run from the root directory of the repository. The following arguments are required:
-- `-i` or `--input`: The path to the input file
-- `-o` or `--output`: The path to the output file
+The program needs to be run from the root directory of the repository. The following arguments are accepted:
+- `-i` or `--input`: The path to the input file. Required.
+- `-o` or `--output`: The path to the output file. Not required, it will default to output.txt if not provided.
 
 The program can hence be run as follows:
 ```bash
@@ -31,6 +31,12 @@ We have set a deafult working directory for the input and output files as `demo`
 For example:
 ```bash
 python3 -m auto_integrate_cli -i inputs/input_file.json -o outputs/output_file.json
+```
+## Running the tests
+We support unit tests using PyTest.
+To run the tests:
+```bash
+python3 -m auto_integrate_cli -i <input_file> --runTests
 ```
 
 ## Contributing
